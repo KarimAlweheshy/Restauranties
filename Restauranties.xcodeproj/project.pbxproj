@@ -21,6 +21,7 @@
 		F6AB843225501D76000DB39E /* SceneSessionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB843125501D76000DB39E /* SceneSessionHandler.swift */; };
 		F6E6ED1E255022D3000C219D /* Profile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F6E6ED1D255022D3000C219D /* Profile.storyboard */; };
 		F6E6ED2325502831000C219D /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E6ED2225502831000C219D /* ProfileViewController.swift */; };
+		F6E6ED2925504514000C219D /* ImageWithInitialsGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E6ED2825504514000C219D /* ImageWithInitialsGenerator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 		F6AB843125501D76000DB39E /* SceneSessionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneSessionHandler.swift; sourceTree = "<group>"; };
 		F6E6ED1D255022D3000C219D /* Profile.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Profile.storyboard; sourceTree = "<group>"; };
 		F6E6ED2225502831000C219D /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		F6E6ED2825504514000C219D /* ImageWithInitialsGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWithInitialsGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 				F6AB8390255007C3000DB39E /* AppDelegate.swift */,
 				F6AB8392255007C3000DB39E /* SceneDelegate.swift */,
 				F6AB843125501D76000DB39E /* SceneSessionHandler.swift */,
+				F6E6ED2725504501000C219D /* Utilities */,
 				F6E6ED1B255022AC000C219D /* Settings */,
 				F6AB843C25502054000DB39E /* Home */,
 				F6AB8399255007C7000DB39E /* Assets.xcassets */,
@@ -201,6 +204,14 @@
 				F6E6ED2225502831000C219D /* ProfileViewController.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		F6E6ED2725504501000C219D /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F6E6ED2825504514000C219D /* ImageWithInitialsGenerator.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -480,6 +491,7 @@
 			files = (
 				F6AB843225501D76000DB39E /* SceneSessionHandler.swift in Sources */,
 				F6AB8395255007C3000DB39E /* HomeViewController.swift in Sources */,
+				F6E6ED2925504514000C219D /* ImageWithInitialsGenerator.swift in Sources */,
 				F6E6ED2325502831000C219D /* ProfileViewController.swift in Sources */,
 				F6AB8391255007C3000DB39E /* AppDelegate.swift in Sources */,
 				F6AB8393255007C3000DB39E /* SceneDelegate.swift in Sources */,

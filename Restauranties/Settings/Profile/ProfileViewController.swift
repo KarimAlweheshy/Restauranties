@@ -62,26 +62,7 @@ extension ProfileViewController {
     private func setupUI() {
         userNameLabel.text = user.displayName
         emailLabel.text = user.email
-        setupUserImage()
+        userImageView.image = ImageWithInitialsGenerator().generate(for: user.displayName ?? "")
         isVerifiedImageView.image = UIImage(systemName: user.isEmailVerified ? "checkmark.seal" : "xmark.seal")
-    }
-
-    private func setupUserImage() {
-        let firstNameInitial = user.displayName?.split(separator: " ").first?.first
-        let lastNameInitial = user.displayName?.split(separator: " ").last?.first
-
-        let lblNameInitialize = UILabel()
-        lblNameInitialize.font = .boldSystemFont(ofSize: 80)
-        lblNameInitialize.frame.size = CGSize(width: 160.0, height: 160.0)
-        lblNameInitialize.textColor = .darkText
-        lblNameInitialize.text = String(firstNameInitial!) + String(lastNameInitial!)
-        lblNameInitialize.textAlignment = .center
-        lblNameInitialize.backgroundColor = .secondarySystemBackground
-        lblNameInitialize.layer.cornerRadius = 80.0
-
-        UIGraphicsBeginImageContext(lblNameInitialize.frame.size)
-        lblNameInitialize.layer.render(in: UIGraphicsGetCurrentContext()!)
-        userImageView.image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
     }
 }
