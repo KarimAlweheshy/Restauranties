@@ -9,6 +9,7 @@ target 'Restauranties' do
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
   pod 'FirebaseUI'
+  pod 'Firebase/Database'
 
   target 'RestaurantiesTests' do
     inherit! :search_paths

@@ -20,8 +20,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
+
         FirebaseApp.configure()
-        let sessionHandler = SceneSessionHandler(windowScene: windowScene)
+        let database = Database.database()
+        database.isPersistenceEnabled = true
+
+        let sessionHandler = SceneSessionHandler(
+            windowScene: windowScene,
+            database: database
+        )
         sessionHandler.startSession()
         sessionHandler.listenToSessionChanges()
         self.sessionHandler = sessionHandler

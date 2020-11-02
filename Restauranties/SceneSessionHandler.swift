@@ -12,10 +12,15 @@ final class SceneSessionHandler {
     var window: UIWindow?
     
     private let windowScene: UIWindowScene
+    private let database: Database
     private var authListener: AuthStateDidChangeListenerHandle?
 
-    init(windowScene: UIWindowScene) {
+    init(
+        windowScene: UIWindowScene,
+        database: Database
+    ) {
         self.windowScene = windowScene
+        self.database = database
     }
 
     deinit {
