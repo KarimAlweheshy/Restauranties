@@ -6,13 +6,15 @@
 //
 
 import UIKit
-import FirebaseAuth
+import Firebase
 
 final class HomeViewController: UITabBarController {
     private let user: User
+    private let collectionReference: CollectionReference
 
-    init(user: User) {
+    init(user: User, collectionReference: CollectionReference) {
         self.user = user
+        self.collectionReference = collectionReference
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -22,14 +24,17 @@ final class HomeViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewControllers = [ProfileViewController.make(user: user)]
+        viewControllers = [
+            RestaurantsListViewController.make(collectionReference: collectionReference, user: user),
+            ProfileViewController.make(user: user)
+        ]
     }
 }
 
 // MARK: - Factory Methods
 
 extension HomeViewController {
-    static func make(user: User) -> HomeViewController {
-        HomeViewController(user: user)
+    static func make(user: User, collectionReference: CollectionReference) -> HomeViewController {
+        HomeViewController(user: user, collectionReference: collectionReference)
     }
 }

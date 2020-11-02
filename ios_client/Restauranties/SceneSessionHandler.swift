@@ -12,15 +12,15 @@ final class SceneSessionHandler {
     var window: UIWindow?
     
     private let windowScene: UIWindowScene
-    private let database: Database
+    private let collectionReference: CollectionReference
     private var authListener: AuthStateDidChangeListenerHandle?
 
     init(
         windowScene: UIWindowScene,
-        database: Database
+        collectionReference: CollectionReference
     ) {
         self.windowScene = windowScene
-        self.database = database
+        self.collectionReference = collectionReference
     }
 
     deinit {
@@ -33,29 +33,30 @@ final class SceneSessionHandler {
 
 extension SceneSessionHandler {
     func listenToSessionChanges() {
-        authListener = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
-            self?.setCorrectRoot(for: user)
+        authListener = Auth.auth().addStateDidChangeListener { [unowned self] (auth, user) in
+            self.setCorrectRoot(for: user, collectionReference: self.collectionReference)
         }
     }
 
     func startSession() {
-        setCorrectRoot(for: Auth.auth().currentUser)
+        guard Auth.auth().currentUser == nil else { return }
+        presentAuthViewController()
     }
 }
 
 // MARK: - Private Methods
 
 extension SceneSessionHandler {
-    private func setCorrectRoot(for user: User?) {
+    private func setCorrectRoot(for user: User?, collectionReference: CollectionReference) {
         if let user = user {
-            presentMainViewController(for: user)
+            presentMainViewController(for: user, collectionReference: collectionReference)
         } else {
             presentAuthViewController()
         }
     }
 
-    private func presentMainViewController(for user: User) {
-        let viewController = HomeViewController.make(user: user)
+    private func presentMainViewController(for user: User, collectionReference: CollectionReference) {
+        let viewController = HomeViewController.make(user: user, collectionReference: collectionReference)
         present(rootViewController: viewController)
     }
 

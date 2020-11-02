@@ -22,12 +22,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         FirebaseApp.configure()
-        let database = Database.database()
-        database.isPersistenceEnabled = true
+        let database = Firestore.firestore().collection("restaurants")
 
         let sessionHandler = SceneSessionHandler(
             windowScene: windowScene,
-            database: database
+            collectionReference: database
         )
         sessionHandler.startSession()
         sessionHandler.listenToSessionChanges()
