@@ -9,14 +9,24 @@ import UIKit
 import FirebaseUI
 
 final class SceneSessionHandler {
+    var window: UIWindow?
+    
     private let windowScene: UIWindowScene
     private var authListener: AuthStateDidChangeListenerHandle?
-    var window: UIWindow?
 
     init(windowScene: UIWindowScene) {
         self.windowScene = windowScene
     }
 
+    deinit {
+        guard let authListener = authListener else { return }
+        Auth.auth().removeStateDidChangeListener(authListener)
+    }
+}
+
+// MARK: - Public APIs
+
+extension SceneSessionHandler {
     func listenToSessionChanges() {
         authListener = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
             self?.setCorrectRoot(for: user)
@@ -27,6 +37,8 @@ final class SceneSessionHandler {
         setCorrectRoot(for: Auth.auth().currentUser)
     }
 }
+
+// MARK: - Private Methods
 
 extension SceneSessionHandler {
     private func setCorrectRoot(for user: User?) {

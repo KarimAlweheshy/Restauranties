@@ -9,10 +9,6 @@ import UIKit
 import FirebaseAuth
 
 final class HomeViewController: UITabBarController {
-    static func make(user: User) -> HomeViewController {
-        HomeViewController(user: user)
-    }
-
     private let user: User
 
     init(user: User) {
@@ -27,5 +23,13 @@ final class HomeViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         viewControllers = [ProfileViewController.make(user: user)]
+    }
+}
+
+// MARK: - Factory Methods
+
+extension HomeViewController {
+    static func make(user: User) -> HomeViewController {
+        HomeViewController(user: user)
     }
 }
