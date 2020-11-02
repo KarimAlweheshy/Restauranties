@@ -53,6 +53,8 @@ extension SceneSessionHandler {
             actionCodeSetting: ActionCodeSettings()
         )
         authUI.providers = [emailAuthProvider, FUIOAuth.appleAuthProvider()]
+        authUI.shouldHideCancelButton = true
+
         let authViewController = authUI.authViewController()
         present(rootViewController: authViewController)
     }
