@@ -11,6 +11,9 @@
 		65BDFE365159A8482A7D813E /* Pods_RestaurantiesTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47E999F053538EE5B2FE5172 /* Pods_RestaurantiesTests.framework */; };
 		A5C7B0F201A9E4257655C49C /* Pods_Restauranties_RestaurantiesUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CB739A9F80DDBE7409671A2 /* Pods_Restauranties_RestaurantiesUITests.framework */; };
 		F661F3C725517F140096E6D8 /* RestaurantsListViewControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F3C625517F140096E6D8 /* RestaurantsListViewControllerFactory.swift */; };
+		F661F3F725519CF30096E6D8 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F3F625519CF30096E6D8 /* ProfileViewModel.swift */; };
+		F661F3FC25519DD10096E6D8 /* UserRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F3FB25519DD10096E6D8 /* UserRight.swift */; };
+		F661F4012551A1800096E6D8 /* ProfileViewControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F4002551A1800096E6D8 /* ProfileViewControllerFactory.swift */; };
 		F6AB8391255007C3000DB39E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8390255007C3000DB39E /* AppDelegate.swift */; };
 		F6AB8393255007C3000DB39E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8392255007C3000DB39E /* SceneDelegate.swift */; };
 		F6AB8395255007C3000DB39E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8394255007C3000DB39E /* HomeViewController.swift */; };
@@ -59,6 +62,9 @@
 		BF5638EC3851C8502C47FBAA /* Pods-Restauranties.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Restauranties.release.xcconfig"; path = "Target Support Files/Pods-Restauranties/Pods-Restauranties.release.xcconfig"; sourceTree = "<group>"; };
 		C98A27D2E67B2873C7F4905C /* Pods-Restauranties-RestaurantiesUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Restauranties-RestaurantiesUITests.release.xcconfig"; path = "Target Support Files/Pods-Restauranties-RestaurantiesUITests/Pods-Restauranties-RestaurantiesUITests.release.xcconfig"; sourceTree = "<group>"; };
 		F661F3C625517F140096E6D8 /* RestaurantsListViewControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantsListViewControllerFactory.swift; sourceTree = "<group>"; };
+		F661F3F625519CF30096E6D8 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		F661F3FB25519DD10096E6D8 /* UserRight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRight.swift; sourceTree = "<group>"; };
+		F661F4002551A1800096E6D8 /* ProfileViewControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewControllerFactory.swift; sourceTree = "<group>"; };
 		F6AB838D255007C3000DB39E /* Restauranties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Restauranties.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6AB8390255007C3000DB39E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F6AB8392255007C3000DB39E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -218,6 +224,8 @@
 			children = (
 				F6E6ED1D255022D3000C219D /* Profile.storyboard */,
 				F6E6ED2225502831000C219D /* ProfileViewController.swift */,
+				F661F4002551A1800096E6D8 /* ProfileViewControllerFactory.swift */,
+				F661F3F625519CF30096E6D8 /* ProfileViewModel.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -255,6 +263,7 @@
 			isa = PBXGroup;
 			children = (
 				F6E6ED8325505B5F000C219D /* Restaurant.swift */,
+				F661F3FB25519DD10096E6D8 /* UserRight.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -536,15 +545,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6AB843225501D76000DB39E /* SceneSessionHandler.swift in Sources */,
+				F661F3FC25519DD10096E6D8 /* UserRight.swift in Sources */,
 				F6AB8395255007C3000DB39E /* HomeViewController.swift in Sources */,
 				F6E6ED2925504514000C219D /* ImageWithInitialsGenerator.swift in Sources */,
 				F6E6ED8425505B5F000C219D /* Restaurant.swift in Sources */,
 				F6E6EDC72551483C000C219D /* RestaurantsListViewModel.swift in Sources */,
+				F661F4012551A1800096E6D8 /* ProfileViewControllerFactory.swift in Sources */,
 				F6E6ED2325502831000C219D /* ProfileViewController.swift in Sources */,
 				F6E6ED8925505B85000C219D /* RestaurantsListViewController.swift in Sources */,
 				F6E6EDCC2551486E000C219D /* RestaurantCellViewModel.swift in Sources */,
 				F661F3C725517F140096E6D8 /* RestaurantsListViewControllerFactory.swift in Sources */,
 				F6AB8391255007C3000DB39E /* AppDelegate.swift in Sources */,
+				F661F3F725519CF30096E6D8 /* ProfileViewModel.swift in Sources */,
 				F6AB8393255007C3000DB39E /* SceneDelegate.swift in Sources */,
 				F6E6EDD125517BE5000C219D /* RestaurantListCell.swift in Sources */,
 			);

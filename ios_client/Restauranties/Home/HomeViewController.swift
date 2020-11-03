@@ -28,7 +28,7 @@ final class HomeViewController: UITabBarController {
         let restaurantsList = factory.makeForNormalUser(collectionReference: collectionReference, user: user)
         viewControllers = [
             UINavigationController(rootViewController: restaurantsList),
-            ProfileViewController.make(user: user)
+            ProfileViewControllerFactory().makeViewController(user: user)
         ]
     }
 }

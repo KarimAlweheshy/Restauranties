@@ -8,9 +8,10 @@ target 'Restauranties' do
   # Pods for Restauranties
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
-  pod 'FirebaseUI'
+  pod 'FirebaseUI', '~> 8.0' 
   pod 'Firebase/Firestore'
   pod 'FirebaseFirestoreSwift'
+  pod 'Firebase/Functions'
 
   target 'RestaurantiesTests' do
     inherit! :search_paths

@@ -6,18 +6,22 @@
 //
 
 import UIKit
-import FirebaseAuth
 
 final class ProfileViewController: UIViewController {
-    private let user: User
+    private var viewModel: ProfileViewModel
 
     @IBOutlet private var userImageView: UIImageView!
     @IBOutlet private var userNameLabel: UILabel!
     @IBOutlet private var emailLabel: UILabel!
+    @IBOutlet private var userTypeLabel: UILabel!
     @IBOutlet private var isVerifiedImageView: UIImageView!
 
-    init?(coder: NSCoder, user: User) {
-        self.user = user
+    @IBOutlet private var changeUserRightContainer: UIView!
+    @IBOutlet private var changeUserRightButton: UIButton!
+    @IBOutlet private var changeUserRightLoadingView: UIActivityIndicatorView!
+
+    init?(coder: NSCoder, viewModel: ProfileViewModel) {
+        self.viewModel = viewModel
         super.init(coder: coder)
     }
 
@@ -25,9 +29,9 @@ final class ProfileViewController: UIViewController {
         fatalError()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshView()
     }
 
     override func viewDidLayoutSubviews() {
@@ -36,33 +40,43 @@ final class ProfileViewController: UIViewController {
     }
 }
 
-// MARK: - Factory Methods
-
-extension ProfileViewController {
-    static func make(user: User) -> ProfileViewController {
-        let storyboard = UIStoryboard(name: "Profile", bundle: nil)
-        let viewController: ProfileViewController? = storyboard.instantiateInitialViewController { coder in
-            ProfileViewController(coder: coder, user: user)
-        }
-        return viewController!
-    }
-}
-
 // MARK: - Actions
 
 extension ProfileViewController {
     @IBAction private func didTapSignOut() {
-        try? Auth.auth().signOut()
+        viewModel.didTapSignOut()
+    }
+
+    @IBAction private func didTapBecomeOwner() {
+        showChangeRightButtonLoading(true)
+        viewModel.didTapChangeRightAction { [weak self] in
+            guard let self = self else { return }
+            self.refreshView()
+        }
     }
 }
 
 // MARK: - Private Methods
 
 extension ProfileViewController {
-    private func setupUI() {
-        userNameLabel.text = user.displayName
-        emailLabel.text = user.email
-        userImageView.image = ImageWithInitialsGenerator().generate(for: user.displayName ?? "")
-        isVerifiedImageView.image = UIImage(systemName: user.isEmailVerified ? "checkmark.seal" : "xmark.seal")
+    private func refreshView() {
+        userNameLabel.text = viewModel.displayName
+        emailLabel.text = viewModel.userEmail
+        userImageView.image = ImageWithInitialsGenerator().generate(for: viewModel.displayName ?? "")
+        isVerifiedImageView.image = UIImage(systemName: viewModel.isEmailVerified ? "checkmark.seal" : "xmark.seal")
+
+        viewModel.refreshedViewModel { [weak self] viewModel in
+            guard let self = self else { return }
+            self.showChangeRightButtonLoading(false)
+            self.viewModel = viewModel
+            self.changeUserRightContainer.isHidden = viewModel.isChangeUserRightContainerHidden
+            self.userTypeLabel.text = viewModel.userType
+            self.changeUserRightButton.setTitle(viewModel.changeUserRightButtonText, for: .normal)
+        }
+    }
+
+    private func showChangeRightButtonLoading(_ isLoading: Bool) {
+        changeUserRightButton.isEnabled = !isLoading
+        _ = isLoading ? changeUserRightLoadingView.startAnimating() : changeUserRightLoadingView.stopAnimating()
     }
 }
