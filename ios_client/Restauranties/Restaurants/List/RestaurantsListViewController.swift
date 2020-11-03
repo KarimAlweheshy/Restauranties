@@ -6,15 +6,18 @@
 //
 
 import UIKit
-import Firebase
+
+protocol RestaurantsListView: NSObjectProtocol {
+    func reload()
+}
 
 final class RestaurantsListViewController: UIViewController {
-    private let collectionReference: CollectionReference
-    private let user: User
+    private let viewModel: RestaurantsListViewModel
 
-    init?(coder: NSCoder, collectionReference: CollectionReference, user: User) {
-        self.collectionReference = collectionReference
-        self.user = user
+    @IBOutlet private var tableView: UITableView!
+
+    init?(coder: NSCoder, viewModel: RestaurantsListViewModel) {
+        self.viewModel = viewModel
         super.init(coder: coder)
     }
 
@@ -24,26 +27,28 @@ final class RestaurantsListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionReference.getDocuments(source: .default) { snapshot, error in
-            let restaurants = snapshot?.documents.compactMap { data -> Restaurant? in
-                guard let jsonData = try? JSONSerialization.data(withJSONObject: data.data(), options: .fragmentsAllowed) else {
-                    return nil
-                }
-                return try? JSONDecoder().decode(Restaurant.self, from: jsonData)
-            }
-            print(restaurants ?? [])
-        }
+        viewModel.viewDidLoad()
     }
 }
 
-// MARK: - Factory
+// MARK: - RestaurantsListView
 
-extension RestaurantsListViewController {
-    static func make(collectionReference: CollectionReference, user: User) -> RestaurantsListViewController {
-        let storyboard = UIStoryboard(name: "RestaurantsList", bundle: nil)
-        let viewController: RestaurantsListViewController? = storyboard.instantiateInitialViewController { coder in
-            RestaurantsListViewController(coder: coder, collectionReference: collectionReference, user: user)
-        }
-        return viewController!
+extension RestaurantsListViewController: RestaurantsListView {
+    func reload() {
+        tableView.reloadData()
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension RestaurantsListViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.numberOfRows()
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantListCell", for: indexPath) as! RestaurantListCell
+        viewModel.cellViewModel(for: indexPath).configure(cell: cell)
+        return cell
     }
 }
