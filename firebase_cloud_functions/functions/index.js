@@ -75,6 +75,13 @@ module.exports.myRestaurants = functions.https.onCall(async (data, context) => {
   return await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
 });
 
+module.exports.allRestaurants = functions.https.onCall(async (data, context) => {
+  verifyAuth(context)
+  await verifyIsRaterUser(admin, context.auth.uid)
+  const restaurantsCollection = db.collection("restaurants")
+  return await restaurantsCollection.get()
+});
+
 module.exports.addRestaurant = functions.https.onCall(async (data, context) => {
   verifyAuth(context)
   await verifyIsRestaurantOwnerUser(admin, context.auth.uid)
@@ -118,6 +125,13 @@ async function verifyIsAdminUser(admin, uid) {
   const user = await findUser(admin, uid)
   if (!isAdminUser(user)) {
     throw new functions.https.HttpsError('failed-precondition', 'Only Restaurant Owner is allowed to access such calls');
+  }
+}
+
+async function verifyIsRaterUser(admin, uid) {
+  const user = await findUser(admin, uid)
+  if (!isAdminUser(user) && !isRestaurantOwnerUser(user)) {
+    throw new functions.https.HttpsError('failed-precondition', 'Only Admin is allowed to access such calls');
   }
 }
 
