@@ -11,29 +11,85 @@ integrify({ config: { functions, db } });
 // Rules will be loaded from "integrify.rules.js"
 module.exports = integrify();
 
-module.exports.becomeOwner = functions.https.onCall((data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called ' + 'while authenticated.');
-  }
-  return admin.auth().setCustomUserClaims(context.auth.uid, {owner: true}).then(() => {
-    return { message: 'User is now an owner' };
+module.exports.becomeOwner = functions.https.onCall(async (_data, context) => {
+  verifyAuth(context)
+  await admin.auth().setCustomUserClaims(context.auth.uid, { owner: true });
+  return { message: 'User is now an owner' };
+});
+
+module.exports.becomeRater = functions.https.onCall(async (_data, context) => {
+  verifyAuth(context)
+  await admin.auth().setCustomUserClaims(context.auth.uid, {});
+  return { message: 'User is now a rater' };
+});
+
+module.exports.becomeAdmin = functions.https.onCall(async (_data, context) => {
+  verifyAuth(context)
+  await admin.auth().setCustomUserClaims(context.auth.uid, { admin: true });
+  return { message: 'User is now an admin' };
+});
+
+module.exports.getAllUsers = functions.https.onCall(async (_data, context) => {
+  verifyAuth(context)
+  await verifyIsAdminUser(admin, context.auth.uid)
+  
+  const result = await admin.auth().listUsers();
+  return result.users.map(user => {
+    return { 
+      username: user.displayName,
+      photoURL: user.photoURL,
+      creationDate: user.metadata.creationTime,
+      claims: user.customClaims,
+      isVerified: user.emailVerified,
+      uid: user.uid,
+      email: user.email,
+    }
   });
 });
 
-module.exports.becomeRater = functions.https.onCall((data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called ' + 'while authenticated.');
+module.exports.deleteUser = functions.https.onCall(async (data, context) => {
+  verifyAuth(context)
+  await verifyIsAdminUser(admin, context.auth.uid)
+  
+  if (!data.uid) {
+    throw new functions.https.HttpsError('failed-precondition', 'Missing uid in body');
   }
-  return admin.auth().setCustomUserClaims(context.auth.uid, {}).then(() => {
-    return { message: 'User is now a rater' };
-  });
+  
+  if (isAdminUser(await findUser(admin, data.uid))) {
+    throw new functions.https.HttpsError('failed-precondition', 'Cannot delete admin a user from API');
+  }
+  
+  // TODO: if owner, delete all restaurants in a transaction with user
+  // TODO: if rater, delete all ratings in a transaction with user
+  try {
+    return await admin.auth().deleteUser(data.uid)  ;
+  } catch (error) {
+    throw new functions.https.HttpsError('failed-precondition', 'Error happened deleting the user');  
+  }
 });
 
-module.exports.becomeAdmin = functions.https.onCall((data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called ' + 'while authenticated.');
+async function findUser(admin, uid) {
+  try {
+    return await admin.auth().getUser(uid);
+  } catch (error) {
+    throw new functions.https.HttpsError('failed-precondition', 'User with uid ' + uid + ' does not exist');  
   }
-  return admin.auth().setCustomUserClaims(context.auth.uid, {admin: true}).then(() => {
-    return { message: 'User is now an admin' };
-  });
-});
+}
+
+function verifyAuth(context) {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  }
+}
+
+async function verifyIsAdminUser(admin, uid) {
+  const user = await findUser(admin, uid)
+  if (!isAdminUser(user)) {
+    throw new functions.https.HttpsError('failed-precondition', 'Only Admin is allowed to access such calls');
+  }
+}
+
+function isAdminUser(user) {
+  const claims = user.customClaims;
+  return claims && claims['admin'] === true
+}
