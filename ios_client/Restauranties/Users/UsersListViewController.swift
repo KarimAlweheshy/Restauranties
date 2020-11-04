@@ -63,21 +63,57 @@ extension UsersListViewController: UITableViewDataSource {
 
 extension UsersListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let user = users[indexPath.row]
-        guard user.claims?["admin"] != true else { return nil }
-        return UISwipeActionsConfiguration(
+        UISwipeActionsConfiguration(
             actions: [
                 UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
-                    Functions.functions().httpsCallable("deleteUser").call(["uid": user.uid]) { [weak self] result, error in
-                        completion(error == nil)
-                        guard let self = self else { return }
-                        self.users.remove(at: indexPath.row)
-                        self.tableView.beginUpdates()
-                        self.tableView.deleteRows(at: [indexPath], with: .left)
-                        self.tableView.endUpdates()
+                    let user = self.users[indexPath.row]
+                    let right = user.claims.map(UserRight.init(claims:))
+                    guard right != .admin else { self.showCannotDeleteAdmin(); return completion(true) }
+
+                    let message = right == .rater
+                        ? "Deleting this user will result in deletion of all his ratings"
+                        : "Deleting this user will result in deletion of all his restaurants and their ratings"
+                    self.showDeleteUserAlert(message: message) {
+                        Functions.functions().httpsCallable("deleteUser").call(["uid": user.uid]) { [weak self] result, error in
+                            guard let self = self else { return }
+                            self.users.remove(at: indexPath.row)
+                            self.tableView.beginUpdates()
+                            self.tableView.deleteRows(at: [indexPath], with: .left)
+                            self.tableView.endUpdates()
+                        }
+                    } cancelAction: {
+                        completion(true)
                     }
                 }
             ]
         )
+    }
+}
+
+// MARK: - Private Methods
+extension UsersListViewController {
+    private func showDeleteUserAlert(
+        message: String,
+        deleteAction: @escaping () -> Void,
+        cancelAction: @escaping () -> Void
+    ) {
+        let alert = UIAlertController(
+            title: "Delete User",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in deleteAction() }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in cancelAction() }))
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func showCannotDeleteAdmin() {
+        let alert = UIAlertController(
+            title: "Delete User",
+            message: "Cannot delete an Admin from API",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: { _ in }))
+        present(alert, animated: true, completion: nil)
     }
 }
