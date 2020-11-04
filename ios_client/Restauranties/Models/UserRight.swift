@@ -12,4 +12,10 @@ enum UserRight {
     case rater
     case admin
     case restaurantOwner
+
+    init(claims: [String: Any]) {
+        let isAdmin = claims["admin"] as? Bool == true
+        let isOwner = claims["owner"] as? Bool == true
+        self = isAdmin ? .admin : isOwner ? .restaurantOwner : .rater
+    }
 }

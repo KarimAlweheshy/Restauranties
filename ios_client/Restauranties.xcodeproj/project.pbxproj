@@ -14,6 +14,11 @@
 		F661F3F725519CF30096E6D8 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F3F625519CF30096E6D8 /* ProfileViewModel.swift */; };
 		F661F3FC25519DD10096E6D8 /* UserRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F3FB25519DD10096E6D8 /* UserRight.swift */; };
 		F661F4012551A1800096E6D8 /* ProfileViewControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F4002551A1800096E6D8 /* ProfileViewControllerFactory.swift */; };
+		F661F4072551B68C0096E6D8 /* UsersListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F4062551B68C0096E6D8 /* UsersListViewController.swift */; };
+		F661F40C2551B6EB0096E6D8 /* UsersList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F661F40B2551B6EB0096E6D8 /* UsersList.storyboard */; };
+		F661F4112551B7D50096E6D8 /* UsersListViewControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F4102551B7D50096E6D8 /* UsersListViewControllerFactory.swift */; };
+		F661F4192552BCF40096E6D8 /* UserAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F4182552BCF40096E6D8 /* UserAccount.swift */; };
+		F661F41E2552BED50096E6D8 /* UserAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F661F41D2552BED50096E6D8 /* UserAccountCell.swift */; };
 		F6AB8391255007C3000DB39E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8390255007C3000DB39E /* AppDelegate.swift */; };
 		F6AB8393255007C3000DB39E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8392255007C3000DB39E /* SceneDelegate.swift */; };
 		F6AB8395255007C3000DB39E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8394255007C3000DB39E /* HomeViewController.swift */; };
@@ -65,6 +70,11 @@
 		F661F3F625519CF30096E6D8 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		F661F3FB25519DD10096E6D8 /* UserRight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRight.swift; sourceTree = "<group>"; };
 		F661F4002551A1800096E6D8 /* ProfileViewControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewControllerFactory.swift; sourceTree = "<group>"; };
+		F661F4062551B68C0096E6D8 /* UsersListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListViewController.swift; sourceTree = "<group>"; };
+		F661F40B2551B6EB0096E6D8 /* UsersList.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UsersList.storyboard; sourceTree = "<group>"; };
+		F661F4102551B7D50096E6D8 /* UsersListViewControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListViewControllerFactory.swift; sourceTree = "<group>"; };
+		F661F4182552BCF40096E6D8 /* UserAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccount.swift; sourceTree = "<group>"; };
+		F661F41D2552BED50096E6D8 /* UserAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountCell.swift; sourceTree = "<group>"; };
 		F6AB838D255007C3000DB39E /* Restauranties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Restauranties.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6AB8390255007C3000DB39E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F6AB8392255007C3000DB39E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -143,6 +153,17 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		F661F4052551B66C0096E6D8 /* Users */ = {
+			isa = PBXGroup;
+			children = (
+				F661F40B2551B6EB0096E6D8 /* UsersList.storyboard */,
+				F661F4062551B68C0096E6D8 /* UsersListViewController.swift */,
+				F661F41D2552BED50096E6D8 /* UserAccountCell.swift */,
+				F661F4102551B7D50096E6D8 /* UsersListViewControllerFactory.swift */,
+			);
+			path = Users;
+			sourceTree = "<group>";
+		};
 		F6AB8384255007C3000DB39E = {
 			isa = PBXGroup;
 			children = (
@@ -176,6 +197,7 @@
 				F6E6ED2725504501000C219D /* Utilities */,
 				F6E6ED8225505B53000C219D /* Models */,
 				F6E6ED7F25505A69000C219D /* Restaurants */,
+				F661F4052551B66C0096E6D8 /* Users */,
 				F6E6ED1B255022AC000C219D /* Settings */,
 				F6AB843C25502054000DB39E /* Home */,
 				F6AB8399255007C7000DB39E /* Assets.xcassets */,
@@ -264,6 +286,7 @@
 			children = (
 				F6E6ED8325505B5F000C219D /* Restaurant.swift */,
 				F661F3FB25519DD10096E6D8 /* UserRight.swift */,
+				F661F4182552BCF40096E6D8 /* UserAccount.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -379,6 +402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6AB839D255007C7000DB39E /* LaunchScreen.storyboard in Resources */,
+				F661F40C2551B6EB0096E6D8 /* UsersList.storyboard in Resources */,
 				F6AB842D25501BED000DB39E /* GoogleService-Info.plist in Resources */,
 				F6E6ED8E25505BA0000C219D /* RestaurantsList.storyboard in Resources */,
 				F6E6ED1E255022D3000C219D /* Profile.storyboard in Resources */,
@@ -546,13 +570,17 @@
 			files = (
 				F6AB843225501D76000DB39E /* SceneSessionHandler.swift in Sources */,
 				F661F3FC25519DD10096E6D8 /* UserRight.swift in Sources */,
+				F661F4192552BCF40096E6D8 /* UserAccount.swift in Sources */,
 				F6AB8395255007C3000DB39E /* HomeViewController.swift in Sources */,
 				F6E6ED2925504514000C219D /* ImageWithInitialsGenerator.swift in Sources */,
 				F6E6ED8425505B5F000C219D /* Restaurant.swift in Sources */,
+				F661F4112551B7D50096E6D8 /* UsersListViewControllerFactory.swift in Sources */,
+				F661F4072551B68C0096E6D8 /* UsersListViewController.swift in Sources */,
 				F6E6EDC72551483C000C219D /* RestaurantsListViewModel.swift in Sources */,
 				F661F4012551A1800096E6D8 /* ProfileViewControllerFactory.swift in Sources */,
 				F6E6ED2325502831000C219D /* ProfileViewController.swift in Sources */,
 				F6E6ED8925505B85000C219D /* RestaurantsListViewController.swift in Sources */,
+				F661F41E2552BED50096E6D8 /* UserAccountCell.swift in Sources */,
 				F6E6EDCC2551486E000C219D /* RestaurantCellViewModel.swift in Sources */,
 				F661F3C725517F140096E6D8 /* RestaurantsListViewControllerFactory.swift in Sources */,
 				F6AB8391255007C3000DB39E /* AppDelegate.swift in Sources */,

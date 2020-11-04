@@ -25,15 +25,12 @@ extension ProfileViewModel {
     func refreshedViewModel(completionHandler: @escaping (ProfileViewModel) -> Void) {
         user.getIDTokenResult(forcingRefresh: true) { result, error in
             if let result = result {
-                let isAdmin = result.claims["admin"] as? Bool == true
-                let isOwner = result.claims["owner"] as? Bool == true
-                completionHandler(
-                    isAdmin
-                        ? ProfileAdminViewModel(user: user)
-                        : isOwner
-                        ? ProfileRestaurantOwnerViewModel(user: user) as ProfileViewModel
-                        : ProfileRaterViewModel(user: user) as ProfileViewModel
-                )
+                switch UserRight(claims: result.claims) {
+                case .admin: completionHandler(ProfileAdminViewModel(user: user))
+                case .restaurantOwner: completionHandler(ProfileRestaurantOwnerViewModel(user: user))
+                case .rater: completionHandler(ProfileRaterViewModel(user: user))
+                case .unknown: fatalError()
+                }
             } else {
                 completionHandler(ProfileUnknownViewModel(user: user))
             }
