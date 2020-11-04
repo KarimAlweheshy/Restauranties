@@ -72,14 +72,18 @@ module.exports.myRestaurants = functions.https.onCall(async (data, context) => {
   verifyAuth(context)
   await verifyIsRestaurantOwnerUser(admin, context.auth.uid)
   const restaurantsCollection = db.collection("restaurants")
-  return await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
+  const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
+  if (!snapshot.docs) { return [] }
+  return snapshot.docs.map(doc => doc.data())
 });
 
 module.exports.allRestaurants = functions.https.onCall(async (data, context) => {
   verifyAuth(context)
   await verifyIsRaterUser(admin, context.auth.uid)
   const restaurantsCollection = db.collection("restaurants")
-  return await restaurantsCollection.get()
+  const snapshot = await restaurantsCollection.get()
+  if (!snapshot.docs) { return [] }
+  return snapshot.docs.map(doc => doc.data())
 });
 
 module.exports.addRestaurant = functions.https.onCall(async (data, context) => {
@@ -130,8 +134,8 @@ async function verifyIsAdminUser(admin, uid) {
 
 async function verifyIsRaterUser(admin, uid) {
   const user = await findUser(admin, uid)
-  if (!isAdminUser(user) && !isRestaurantOwnerUser(user)) {
-    throw new functions.https.HttpsError('failed-precondition', 'Only Admin is allowed to access such calls');
+  if (isAdminUser(user) || isRestaurantOwnerUser(user)) {
+    throw new functions.https.HttpsError('failed-precondition', 'Only Rater is allowed to access such calls');
   }
 }
 
