@@ -25,9 +25,11 @@ final class HomeViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let factory = RestaurantsListViewControllerFactory()
-        let restaurantsList = factory.makeForNormalUser(collectionReference: collectionReference, user: user)
+        let allRestaurantsList = factory.makeForRater()
+        let myRestaurantsList = factory.makeForOwner()
         viewControllers = [
-            UINavigationController(rootViewController: restaurantsList),
+            UINavigationController(rootViewController: allRestaurantsList),
+            UINavigationController(rootViewController: myRestaurantsList),
             UINavigationController(rootViewController: UsersListViewControllerFactory().make()),
             ProfileViewControllerFactory().makeViewController(user: user)
         ]

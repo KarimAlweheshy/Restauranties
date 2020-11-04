@@ -25,8 +25,15 @@ final class RestaurantsListViewController: UIViewController {
         fatalError()
     }
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        title = viewModel.title()
+        tabBarItem.image = UIImage(systemName: viewModel.tabBarSystemImageName())
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
         viewModel.viewDidLoad()
     }
 }
@@ -50,5 +57,24 @@ extension RestaurantsListViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantListCell", for: indexPath) as! RestaurantListCell
         viewModel.cellViewModel(for: indexPath).configure(cell: cell)
         return cell
+    }
+}
+
+// MARK: - Actions
+
+extension RestaurantsListViewController {
+    @objc private func didTapAddNewRestaurant() {
+
+    }
+}
+
+// MARK: - Private Methods
+
+extension RestaurantsListViewController {
+    private func setupUI() {
+        if viewModel.shouldShowAddRestaurant() {
+            let barButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAddNewRestaurant))
+            navigationItem.rightBarButtonItem = barButtonItem
+        }
     }
 }
