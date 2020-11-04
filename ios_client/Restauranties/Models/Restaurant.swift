@@ -9,5 +9,12 @@ import Foundation
 
 struct Restaurant: Codable {
     let name: String
-    let averageRate: Double
+    let phone: String?
+    let imageURL: URL?
+    let categories: [String]?
+    let ownerID: String
+    let totalRatings: Int
+    let averageRating: Double
+    let creationDate: Date
+    let modificationDate: Date
 }
