@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol RestaurantFormView: NSObjectProtocol {
+protocol RestaurantFormView: AnyObject {
     func enableDoneButton(_ isEnabled: Bool)
 }
 

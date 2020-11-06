@@ -11,7 +11,10 @@ protocol RestaurantsListViewModel {
     func title() -> String
     func tabBarSystemImageName() -> String
     func shouldShowAddRestaurant() -> Bool
+    func shouldShowFilterRestaurant() -> Bool
     func viewDidLoad()
     func numberOfRows() -> Int
     func cellViewModel(for indexPath: IndexPath) -> RestaurantCellViewModel
+    func filtersDataSource() -> RestaurantsFilterDataSource
+    func filtersDelegate() -> RestaurantsFilterDelegate?
 }

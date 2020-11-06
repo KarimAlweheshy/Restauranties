@@ -36,6 +36,18 @@ extension RestaurantsListOwnerViewModel: RestaurantsListViewModel {
         restaurants.count
     }
 
+    func shouldShowFilterRestaurant() -> Bool {
+        false
+    }
+
+    func filtersDataSource() -> RestaurantsFilterDataSource {
+        fatalError("Not implemented")
+    }
+
+    func filtersDelegate() -> RestaurantsFilterDelegate? {
+         nil
+    }
+
     func cellViewModel(for indexPath: IndexPath) -> RestaurantCellViewModel {
         RestaurantCellNormalViewModel(restaurant: restaurants[indexPath.row])
     }

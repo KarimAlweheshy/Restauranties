@@ -12,13 +12,18 @@ final class RestaurantsListRaterViewModel {
     weak var view: RestaurantsListView?
 
     private var restaurants = [Restaurant]() { didSet { view?.reload() } }
+    private var selectedFilter: String? = nil
 }
 
 // MARK: - RestaurantsListViewModel
 
 extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
     func viewDidLoad() {
-        Functions.functions().httpsCallable("allRestaurants").call() { [weak self] result, error in
+        var data: [String: Any]?
+        if let selectedFilter = selectedFilter {
+            data = ["filter": selectedFilter]
+        }
+        Functions.functions().httpsCallable("allRestaurants").call(data) { [weak self] result, error in
             guard let self = self else { return }
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .secondsSince1970
@@ -30,6 +35,18 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
             self.restaurants = restaurants
             self.view?.reload()
         }
+    }
+
+    func shouldShowFilterRestaurant() -> Bool {
+        true
+    }
+
+    func filtersDataSource() -> RestaurantsFilterDataSource {
+        self
+    }
+
+    func filtersDelegate() -> RestaurantsFilterDelegate? {
+         self
     }
 
     func numberOfRows() -> Int {
@@ -50,5 +67,28 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
 
     func tabBarSystemImageName() -> String {
         "flag.fill"
+    }
+}
+
+// MARK: - RestaurantsFilterDataSource
+
+extension RestaurantsListRaterViewModel: RestaurantsFilterDataSource {
+    func filters() -> [String] {
+        ["1", "2", "3", "4", "5"]
+    }
+
+    func selectedFilterIndex() -> Int? {
+        guard let selectedFilter = selectedFilter else { return nil }
+        return filters().firstIndex(of: selectedFilter)
+    }
+}
+
+// MARK: - RestaurantsFilterDataSource
+
+extension RestaurantsListRaterViewModel: RestaurantsFilterDelegate {
+    func didSelectFilter(at row: Int?) {
+        defer { viewDidLoad() }
+        guard let row = row else { return selectedFilter = nil }
+        selectedFilter = filters()[row]
     }
 }

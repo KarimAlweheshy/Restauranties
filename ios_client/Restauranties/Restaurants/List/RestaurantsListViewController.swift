@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol RestaurantsListView: NSObjectProtocol {
+protocol RestaurantsListView: AnyObject {
     func reload()
 }
 
@@ -67,15 +67,27 @@ extension RestaurantsListViewController {
         let viewController = RestaurantFormViewControllerFactory().makeNewRestaurant()
         navigationController?.pushViewController(viewController, animated: true)
     }
+
+    @objc private func didTapFilter() {
+        let viewController = RestaurantsFilterViewController.make(dataSource: viewModel.filtersDataSource())
+        viewController.delegate = viewModel.filtersDelegate()
+        navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 
 // MARK: - Private Methods
 
 extension RestaurantsListViewController {
     private func setupUI() {
+        var barButtonItems = navigationItem.rightBarButtonItems ?? []
         if viewModel.shouldShowAddRestaurant() {
             let barButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAddNewRestaurant))
-            navigationItem.rightBarButtonItem = barButtonItem
+            barButtonItems += [barButtonItem]
         }
+        if viewModel.shouldShowFilterRestaurant() {
+            let barButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(didTapFilter))
+            barButtonItems += [barButtonItem]
+        }
+        navigationItem.rightBarButtonItems = barButtonItems
     }
 }
