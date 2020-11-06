@@ -19,26 +19,36 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bzG-Wp-fx6">
                                 <rect key="frame" x="0.0" y="88" width="414" height="725"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="az0-sl-CI0" userLabel="Footer">
-                                    <rect key="frame" x="0.0" y="99.5" width="414" height="0.0"/>
+                                    <rect key="frame" x="0.0" y="76.5" width="414" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RestaurantListCell" id="Nxz-vK-NfQ" customClass="RestaurantListCell" customModule="Restauranties" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
+                                        <rect key="frame" x="0.0" y="28" width="414" height="20.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Nxz-vK-NfQ" id="sEh-Re-OHh">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="20.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ah-ws-uM7">
-                                                    <rect key="frame" x="87" y="-43" width="240" height="128"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4ah-ws-uM7">
+                                                    <rect key="frame" x="10" y="10" width="394" height="0.5"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="5"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
                                                 </view>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="4ah-ws-uM7" firstAttribute="leading" secondItem="sEh-Re-OHh" secondAttribute="leading" constant="10" id="YDj-W9-q0T"/>
+                                                <constraint firstAttribute="trailing" secondItem="4ah-ws-uM7" secondAttribute="trailing" constant="10" id="ZHt-8K-DfW"/>
+                                                <constraint firstItem="4ah-ws-uM7" firstAttribute="top" secondItem="sEh-Re-OHh" secondAttribute="top" constant="10" id="mTG-oE-IGF"/>
+                                                <constraint firstAttribute="bottom" secondItem="4ah-ws-uM7" secondAttribute="bottom" constant="10" id="qTb-zx-P5u"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
@@ -57,7 +67,7 @@
                             <constraint firstItem="j2X-Xh-gzl" firstAttribute="trailing" secondItem="bzG-Wp-fx6" secondAttribute="trailing" id="q4k-nk-TGO"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Restaurants" image="books.vertical.fill" catalog="system" id="AeP-1D-cHL"/>
+                    <tabBarItem key="tabBarItem" title="Restaurants" id="AeP-1D-cHL"/>
                     <navigationItem key="navigationItem" title="Restaurants" id="pdX-1P-Gsy"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
@@ -71,7 +81,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="books.vertical.fill" catalog="system" width="128" height="100"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

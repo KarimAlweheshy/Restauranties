@@ -20,10 +20,12 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
     func viewDidLoad() {
         Functions.functions().httpsCallable("allRestaurants").call() { [weak self] result, error in
             guard let self = self else { return }
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .secondsSince1970
             guard
                 let data = result?.data,
                 let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let restaurants = try? JSONDecoder().decode([Restaurant].self, from: jsonData)
+                let restaurants = try? decoder.decode([Restaurant].self, from: jsonData)
             else { return self.restaurants = [] }
             self.restaurants = restaurants
             self.view?.reload()

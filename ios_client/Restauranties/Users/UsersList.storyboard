@@ -154,7 +154,7 @@
                             <constraint firstItem="NGB-cP-Ph4" firstAttribute="leading" secondItem="n5f-RL-CQt" secondAttribute="leading" id="lLN-2m-rzV"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Users" image="chart.bar.doc.horizontal.fill" catalog="system" id="UBQ-Yn-Q7P"/>
+                    <tabBarItem key="tabBarItem" title="Users" id="UBQ-Yn-Q7P"/>
                     <navigationItem key="navigationItem" title="Users" id="f08-86-VeR"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
@@ -168,7 +168,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="chart.bar.doc.horizontal.fill" catalog="system" width="115" height="128"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

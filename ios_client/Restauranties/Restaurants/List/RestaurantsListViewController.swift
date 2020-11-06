@@ -64,7 +64,8 @@ extension RestaurantsListViewController: UITableViewDataSource {
 
 extension RestaurantsListViewController {
     @objc private func didTapAddNewRestaurant() {
-
+        let viewController = RestaurantFormViewControllerFactory().makeNewRestaurant()
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

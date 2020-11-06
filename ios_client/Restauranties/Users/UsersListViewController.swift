@@ -13,6 +13,11 @@ final class UsersListViewController: UIViewController {
 
     private var users = [UserAccount]()
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        tabBarItem.image = UIImage(systemName: "chart.bar.doc.horizontal.fill")
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
