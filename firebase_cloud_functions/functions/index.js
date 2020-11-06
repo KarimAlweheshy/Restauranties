@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const db = admin.firestore();
+db.settings({ ignoreUndefinedProperties: true })
 
 integrify({ config: { functions, db } });
 
@@ -74,7 +75,7 @@ module.exports.myRestaurants = functions.https.onCall(async (data, context) => {
   const restaurantsCollection = db.collection("restaurants")
   const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
   if (!snapshot.docs) { return [] }
-  return snapshot.docs.map(doc => doc.data())
+  return snapshot.docs.map(doc => rewriteTimestampToISO(doc.data()))
 });
 
 module.exports.allRestaurants = functions.https.onCall(async (data, context) => {
@@ -83,8 +84,8 @@ module.exports.allRestaurants = functions.https.onCall(async (data, context) => 
   const restaurantsCollection = db.collection("restaurants")
   const snapshot = await restaurantsCollection.get()
   if (!snapshot.docs) { return [] }
-  return snapshot.docs.map(doc => doc.data())
-});
+  return snapshot.docs.map(doc => rewriteTimestampToISO(doc.data()))
+})
 
 module.exports.addRestaurant = functions.https.onCall(async (data, context) => {
   verifyAuth(context)
@@ -92,8 +93,9 @@ module.exports.addRestaurant = functions.https.onCall(async (data, context) => {
   verifyRestaurantKeysAndValues(data)
   const restaurantsCollection = db.collection("restaurants")
 
-  const restaurantWithSameName = await restaurantsCollection.where('name', '==', data.name).get()
-  if (restaurantWithSameName) {
+  const restaurantWithSameNameSnapshot = await restaurantsCollection.where('name', '==', data.name).get()
+  const restaurantWithSameName = restaurantWithSameNameSnapshot.docs
+  if (restaurantWithSameName.length > 0) {
     throw new functions.https.HttpsError('failed-precondition', 'Owner already has restaurant with same name');  
   }
   
@@ -108,7 +110,9 @@ module.exports.addRestaurant = functions.https.onCall(async (data, context) => {
     creationDate: admin.firestore.Timestamp.fromDate(new Date()),
     modificationDate: admin.firestore.Timestamp.fromDate(new Date()),
   }
-  return await restaurantsCollection.add(restaurant)
+  const docReference = await restaurantsCollection.add(restaurant)
+  const documentSnapshot = await docReference.get()
+  return documentSnapshot.data
 });
 
 async function findUser(admin, uid) {
@@ -158,4 +162,10 @@ function isRestaurantOwnerUser(user) {
 
 function verifyRestaurantKeysAndValues(restaurant) {
   return restaurant.name && restaurant.name.length > 2 
+}
+
+function rewriteTimestampToISO(data) {
+  data.creationDate = data.creationDate._seconds
+  data.modificationDate = data.modificationDate._seconds
+  return data
 }
