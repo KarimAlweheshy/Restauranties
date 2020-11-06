@@ -72,7 +72,7 @@ module.exports.deleteUser = functions.https.onCall(async (data, context) => {
 module.exports.myRestaurants = functions.https.onCall(async (data, context) => {
   verifyAuth(context)
   await verifyIsRestaurantOwnerUser(admin, context.auth.uid)
-  const restaurantsCollection = db.collection("restaurants")
+  const restaurantsCollection = db.collection("restaurants").orderBy("modificationDate")
   const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
   if (!snapshot.docs) { return [] }
   return snapshot.docs.map(doc => rewriteTimestampToISO(doc.data()))
@@ -82,7 +82,8 @@ module.exports.allRestaurants = functions.https.onCall(async (data, context) => 
   verifyAuth(context)
   await verifyIsRaterUser(admin, context.auth.uid)
   const restaurantsCollection = db.collection("restaurants")
-  const snapshot = await restaurantsCollection.get()
+  const filteredRestaurantsCollection = applyRatingFilterOnDocReferenceIfPossible(restaurantsCollection, data)
+  const snapshot = await filteredRestaurantsCollection.orderBy("modificationDate").get()
   if (!snapshot.docs) { return [] }
   return snapshot.docs.map(doc => rewriteTimestampToISO(doc.data()))
 })
@@ -168,4 +169,25 @@ function rewriteTimestampToISO(data) {
   data.creationDate = data.creationDate._seconds
   data.modificationDate = data.modificationDate._seconds
   return data
+}
+
+function applyRatingFilterOnDocReferenceIfPossible(docReference, data) {
+  if (!data || !data.filter) {
+    return docReference
+  }
+  if (!parseInt(data.filter)) {
+    throw new functions.https.HttpsError('failed-precondition', 'Filter must be a whole number e.g. 1');  
+  }
+  if (parseInt(data.filter) > 5 || parseInt(data.filter) < 1) {
+    throw new functions.https.HttpsError('failed-precondition', 'Filter must be between 1 (included) and 5 (included)');  
+  }
+  const filterRating = parseInt(data.filter)
+  docReference = docReference.where('averageRating', '<=', filterRating)
+  if (filterRating > 1) {
+    docReference = docReference.where('averageRating', '>=', filterRating - 1)
+  } else {
+    // To exclude restaurants without ratings
+    docReference = docReference.where('averageRating', '>', 0)
+  }
+  return docReference.orderBy('averageRating')
 }
