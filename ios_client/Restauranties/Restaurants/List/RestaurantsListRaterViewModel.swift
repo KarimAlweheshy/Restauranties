@@ -37,7 +37,7 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
     }
 
     func cellViewModel(for indexPath: IndexPath) -> RestaurantCellViewModel {
-        RestaurantCellNormalViewModel()
+        RestaurantCellNormalViewModel(restaurant: restaurants[indexPath.row])
     }
 
     func shouldShowAddRestaurant() -> Bool {

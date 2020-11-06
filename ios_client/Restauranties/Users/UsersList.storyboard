@@ -64,7 +64,7 @@
                                                                     </constraints>
                                                                 </view>
                                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="dFb-4W-6ZR" userLabel="Right Stack">
-                                                                    <rect key="frame" x="86" y="51.5" width="268" height="55"/>
+                                                                    <rect key="frame" x="86" y="40" width="268" height="78"/>
                                                                     <subviews>
                                                                         <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="vdN-np-OcQ" userLabel="Upper Right Stack">
                                                                             <rect key="frame" x="0.0" y="0.0" width="268" height="26.5"/>
@@ -84,17 +84,17 @@
                                                                             </subviews>
                                                                         </stackView>
                                                                         <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="GtM-pm-yQl" userLabel="Bottom RIght Stack">
-                                                                            <rect key="frame" x="0.0" y="34.5" width="268" height="20.5"/>
+                                                                            <rect key="frame" x="0.0" y="34.5" width="268" height="43.5"/>
                                                                             <subviews>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GhK-EQ-ifr" userLabel="User Right">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="218.5" height="20.5"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="222.5" height="43.5"/>
                                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                                                                     <nil key="textColor"/>
                                                                                     <nil key="highlightedColor"/>
                                                                                 </label>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J3d-eg-7Mr" userLabel="Creation Date">
-                                                                                    <rect key="frame" x="226.5" y="0.0" width="41.5" height="20.5"/>
-                                                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                                    <rect key="frame" x="230.5" y="0.0" width="37.5" height="43.5"/>
+                                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                                                                     <nil key="textColor"/>
                                                                                     <nil key="highlightedColor"/>
                                                                                 </label>
@@ -104,7 +104,7 @@
                                                                 </stackView>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstItem="rDp-DA-7F4" firstAttribute="height" secondItem="dFb-4W-6ZR" secondAttribute="height" multiplier="1.41818" id="Eoi-ny-EWu"/>
+                                                                <constraint firstItem="rDp-DA-7F4" firstAttribute="height" secondItem="dFb-4W-6ZR" secondAttribute="height" id="Eoi-ny-EWu"/>
                                                             </constraints>
                                                         </stackView>
                                                     </subviews>
@@ -130,6 +130,7 @@
                                                 <constraint firstItem="Ngz-so-yar" firstAttribute="top" secondItem="2xI-ER-JXW" secondAttribute="topMargin" id="zpd-2C-efy"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                         <connections>
                                             <outlet property="isVerifiedImageView" destination="jEH-dn-m87" id="mkt-aY-kiW"/>
                                             <outlet property="userCreationLabel" destination="GhK-EQ-ifr" id="2Qr-3T-UuM"/>
