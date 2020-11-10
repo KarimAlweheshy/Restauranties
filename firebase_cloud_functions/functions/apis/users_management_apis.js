@@ -1,6 +1,6 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const userUtilities = require("./../utilities/user_utilities");
+const functions = require("firebase-functions")
+const admin = require("firebase-admin")
+const userUtilities = require("./../utilities/user_utilities")
 
 exports.getAllUsers = functions.https.onCall(async (_data, context) => {
     userUtilities.verifyAuth(context)

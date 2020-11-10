@@ -1,14 +1,14 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const userUtilities = require("./../utilities/user_utilities");
-const restaurantUtilities = require("./../utilities/restaurant_utilities");
+const functions = require("firebase-functions")
+const admin = require("firebase-admin")
+const userUtilities = require("./../utilities/user_utilities")
+const restaurantUtilities = require("./../utilities/restaurant_utilities")
 
 exports.myRestaurants = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     await userUtilities.verifyIsRestaurantOwnerUser(admin, context.auth.uid)
     const restaurantsCollection = db.collection("restaurants").orderBy("modificationDate")
     const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
-    if (!snapshot.docs) { return [] }
+    if (snapshot.empty) { return [] }
     return snapshot.docs.map(doc => rewriteTimestampToISO(doc.data()))
 });
   
@@ -18,7 +18,7 @@ exports.allRestaurants = functions.https.onCall(async (data, context) => {
     const restaurantsCollection = db.collection("restaurants")
     const filteredRestaurantsCollection = applyRatingFilterOnDocReferenceIfPossible(restaurantsCollection, data)
     const snapshot = await filteredRestaurantsCollection.orderBy("modificationDate").get()
-    if (!snapshot.docs) { return [] }
+    if (snapshot.empty) { return [] }
     return snapshot.docs.map(doc => restaurantUtilities.rewriteTimestampToISO(doc.data()))
 });
   
@@ -29,8 +29,7 @@ exports.addRestaurant = functions.https.onCall(async (data, context) => {
     const restaurantsCollection = db.collection("restaurants")
   
     const restaurantWithSameNameSnapshot = await restaurantsCollection.where('name', '==', data.name).get()
-    const restaurantWithSameName = restaurantWithSameNameSnapshot.docs
-    if (restaurantWithSameName.length > 0) {
+    if (!restaurantWithSameNameSnapshot.empty) {
       throw new functions.https.HttpsError('failed-precondition', 'Owner already has restaurant with same name');  
     }
     
