@@ -1,4 +1,19 @@
 {
-  "indexes": [],
+  "indexes": [
+      {
+        "collectionGroup": "restaurants",
+        "queryScope": "COLLECTION",
+        "fields": [
+          {
+              "fieldPath": "averageRating",
+              "order": "ASCENDING"
+          },
+          {
+              "fieldPath": "modificationDate",
+              "order": "ASCENDING"
+          }
+        ]
+      }
+  ],
   "fieldOverrides": []
 }
