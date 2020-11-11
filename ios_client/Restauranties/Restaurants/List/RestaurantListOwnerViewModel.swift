@@ -63,4 +63,9 @@ extension RestaurantsListOwnerViewModel: RestaurantsListViewModel {
     func tabBarSystemImageName() -> String {
         "books.vertical.fill"
     }
+
+    func viewModelForSelectedRestaurant(at indexPath: IndexPath) -> RestaurantDetailsViewModel {
+        let restaurant = restaurants[indexPath.row]
+        return RestaurantDetailsRaterViewModel(restaurant: restaurant)
+    }
 }

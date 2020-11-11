@@ -68,6 +68,11 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
     func tabBarSystemImageName() -> String {
         "flag.fill"
     }
+
+    func viewModelForSelectedRestaurant(at indexPath: IndexPath) -> RestaurantDetailsViewModel {
+        let restaurant = restaurants[indexPath.row]
+        return RestaurantDetailsRaterViewModel(restaurant: restaurant)
+    }
 }
 
 // MARK: - RestaurantsFilterDataSource

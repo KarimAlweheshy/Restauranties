@@ -9,6 +9,7 @@ import UIKit
 
 protocol RestaurantFormView: AnyObject {
     func enableDoneButton(_ isEnabled: Bool)
+    func didFinish()
 }
 
 final class RestaurantFormViewController: UIViewController {
@@ -32,6 +33,10 @@ final class RestaurantFormViewController: UIViewController {
 extension RestaurantFormViewController: RestaurantFormView {
     func enableDoneButton(_ isEnabled: Bool) {
         doneBarButtonItem.isEnabled = isEnabled
+    }
+
+    func didFinish() {
+        navigationController?.popViewController(animated: true)
     }
 }
 

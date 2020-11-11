@@ -5,4 +5,14 @@
 //  Created by Karim Alweheshy on 11/10/20.
 //
 
-import Foundation
+import UIKit
+
+final class RestaurantDetailsViewControllerFactory {
+    func make(viewModel: RestaurantDetailsViewModel) -> RestaurantDetailsViewController {
+        let storyboard = UIStoryboard(name: "RestaurantDetails", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController { coder -> RestaurantDetailsViewController? in
+            RestaurantDetailsViewController(coder: coder, viewModel: viewModel)
+        }
+        return viewController!
+    }
+}

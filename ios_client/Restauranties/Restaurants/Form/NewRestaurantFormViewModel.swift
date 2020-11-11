@@ -15,9 +15,9 @@ final class NewRestaurantFormViewModel: RestaurantFormViewModel {
 
     func didTapDone() {
         guard name.count > 2 else { return }
-        Functions.functions().httpsCallable("addRestaurant").call(["name": name]) { result, error in
-            print(result)
-            print(error)
+        Functions.functions().httpsCallable("addRestaurant").call(["name": name]) { [weak self] result, error in
+            guard error == nil else { return }
+            self?.view?.didFinish()
         }
     }
 

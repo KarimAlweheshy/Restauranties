@@ -60,6 +60,17 @@ extension RestaurantsListViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
+
+extension RestaurantsListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let viewModel = self.viewModel.viewModelForSelectedRestaurant(at: indexPath)
+        let viewController = RestaurantDetailsViewControllerFactory().make(viewModel: viewModel)
+        navigationController?.pushViewController(viewController, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
 // MARK: - Actions
 
 extension RestaurantsListViewController {
