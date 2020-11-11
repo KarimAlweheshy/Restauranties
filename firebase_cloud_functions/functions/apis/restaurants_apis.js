@@ -6,26 +6,38 @@ const restaurantUtilities = require("./../utilities/restaurant_utilities")
 exports.myRestaurants = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     await userUtilities.verifyIsRestaurantOwnerUser(admin, context.auth.uid)
+    const db = admin.firestore()
     const restaurantsCollection = db.collection("restaurants").orderBy("modificationDate")
     const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
     if (snapshot.empty) { return [] }
-    return snapshot.docs.map(doc => rewriteTimestampToISO(doc.data()))
+    return snapshot.docs.map(doc => {
+      var data = restaurantUtilities.rewriteTimestampToISO(doc.data())
+      data.id = doc.ref.id
+      return data
+    })
 });
   
 exports.allRestaurants = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     await userUtilities.verifyIsRaterUser(admin, context.auth.uid)
+    const db = admin.firestore()
     const restaurantsCollection = db.collection("restaurants")
     const filteredRestaurantsCollection = applyRatingFilterOnDocReferenceIfPossible(restaurantsCollection, data)
     const snapshot = await filteredRestaurantsCollection.orderBy("modificationDate").get()
     if (snapshot.empty) { return [] }
-    return snapshot.docs.map(doc => restaurantUtilities.rewriteTimestampToISO(doc.data()))
+    return snapshot.docs.map(doc => {
+      var data = restaurantUtilities.rewriteTimestampToISO(doc.data())
+      data.id = doc.ref.id
+      return data
+    })
 });
   
 exports.addRestaurant = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     await userUtilities.verifyIsRestaurantOwnerUser(admin, context.auth.uid)
     restaurantUtilities.verifyRestaurantKeysAndValues(data)
+
+    const db = admin.firestore()
     const restaurantsCollection = db.collection("restaurants")
   
     const restaurantWithSameNameSnapshot = await restaurantsCollection.where('name', '==', data.name).get()
@@ -46,7 +58,7 @@ exports.addRestaurant = functions.https.onCall(async (data, context) => {
     }
     const docReference = await restaurantsCollection.add(restaurant)
     const documentSnapshot = await docReference.get()
-    return documentSnapshot.data
+    return documentSnapshot.data()
 });
 
 function applyRatingFilterOnDocReferenceIfPossible(docReference, data) {

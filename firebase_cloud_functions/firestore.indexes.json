@@ -13,6 +13,34 @@
               "order": "ASCENDING"
           }
         ]
+      },
+      {
+        "collectionGroup": "restaurants",
+        "queryScope": "COLLECTION",
+        "fields": [
+          {
+              "fieldPath": "ownerID",
+              "order": "ASCENDING"
+          },
+          {
+              "fieldPath": "modificationDate",
+              "order": "ASCENDING"
+          }
+        ]
+      },
+      {
+        "collectionGroup": "ratings",
+        "queryScope": "COLLECTION",
+        "fields": [
+          {
+              "fieldPath": "creationDate",
+              "order": "ASCENDING"
+          },
+          {
+              "fieldPath": "restaurantID",
+              "order": "ASCENDING"
+          }
+        ]
       }
   ],
   "fieldOverrides": []
