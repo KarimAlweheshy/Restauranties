@@ -12,7 +12,9 @@ protocol RatingFormRatingViewModelDelegate: AnyObject {
     func didFinish()
 }
 
-protocol RatingFormViewModel {
+protocol RatingFormViewModel: AnyObject {
+    var view: RatingFormView? { get set }
+    
     func viewDidLoad()
     func didTapDone()
     func didChange(visitDate: Date)
@@ -21,6 +23,7 @@ protocol RatingFormViewModel {
 }
 
 final class RatingFormRatingViewModel {
+    weak var view: RatingFormView?
     weak var delegate: RatingFormRatingViewModelDelegate?
 
     private let restaurant: Restaurant
@@ -46,6 +49,7 @@ extension RatingFormRatingViewModel: RatingFormViewModel {
             let comment = comment,
             comment.count > 0
         else { return }
+        view?.showLoading(true)
         Functions
             .functions()
             .httpsCallable("addRating")
@@ -55,7 +59,8 @@ extension RatingFormRatingViewModel: RatingFormViewModel {
                 "stars": stars,
                 "comment": comment
             ]
-            ) { [weak delegate] result, error in
+            ) { [weak delegate, weak view] result, error in
+                view?.showLoading(false)
                 guard error == nil else { return }
                 delegate?.didFinish()
             }

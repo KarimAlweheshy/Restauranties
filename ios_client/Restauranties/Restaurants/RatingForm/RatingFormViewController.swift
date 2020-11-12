@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol RatingFormView: AnyObject {
+    func showLoading(_ isLoading: Bool)
+}
+
 final class RatingFormViewController: UIViewController {
     private let viewModel: RatingFormViewModel
 
@@ -14,6 +18,7 @@ final class RatingFormViewController: UIViewController {
     @IBOutlet private var commentTextView: UITextView!
     @IBOutlet private var starsTextField: UITextField!
     @IBOutlet private var starsPicker: UIPickerView!
+    @IBOutlet private var doneButton: UIBarButtonItem!
 
     init?(coder: NSCoder, viewModel: RatingFormViewModel) {
         self.viewModel = viewModel
@@ -28,6 +33,14 @@ final class RatingFormViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         viewModel.viewDidLoad()
+    }
+}
+
+// MARK: - RatingFormView
+
+extension RatingFormViewController: RatingFormView {
+    func showLoading(_ isLoading: Bool) {
+        doneButton.isEnabled = !isLoading
     }
 }
 

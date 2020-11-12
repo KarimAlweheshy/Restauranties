@@ -125,6 +125,7 @@
                     <connections>
                         <outlet property="commentTextView" destination="enn-WS-j4Y" id="c93-wM-cA5"/>
                         <outlet property="datePicker" destination="1YV-tY-QUA" id="LBC-Ny-V5s"/>
+                        <outlet property="doneButton" destination="Ipa-HT-okt" id="8x0-2b-3jT"/>
                         <outlet property="starsPicker" destination="MOY-3n-TNL" id="b7H-I2-dLV"/>
                         <outlet property="starsTextField" destination="yl4-Of-tl0" id="fHC-A2-PRw"/>
                     </connections>

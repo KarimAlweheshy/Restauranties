@@ -13,6 +13,7 @@ final class RatingFormViewControllerFactory {
         let viewController = storyboard.instantiateInitialViewController { coder -> RatingFormViewController? in
             RatingFormViewController(coder: coder, viewModel: viewModel)
         }
+        viewModel.view = viewController
         return viewController!
     }
 }
