@@ -65,22 +65,43 @@ exports.addRating = functions.https.onCall(async (data, context) => {
     }
 
     const db = admin.firestore()
-    const ratingsCollection = db.collection("ratings")
-    const docReference = await ratingsCollection.add(rating)
+    const batch = db.batch()
 
-    await documentSnapshot.ref.update({ totalRatings: newTotalRatings, averageRating: newAverageRating })
-    const newDocumentSnapshot = await docReference.get()
-    return newDocumentSnapshot.data()
+    const newRatingDocRef = db.collection("ratings").doc()
+    batch.create(newRatingDocRef, rating)
+    batch.update(documentSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating })
+    
+    try {
+        await batch.commit()
+
+        const newRating = await newRatingDocRef.get()
+        return { id: newRating.id, ...newRating.data() }
+    } catch (error) {
+        throw new functions.https.HttpsError('failed-precondition', 'Error adding the new rating');  
+    }
 });
 
 exports.deleteRating = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     userUtilities.verifyIsAdminUser(admin, context.auth.uid)
 
+    const ratingDocRef = db.collection("ratings").doc(data.id)
+    const ratingSnapshot = await ratingDocRef.get()
+    const rating = ratingSnapshot.data()
+
+    const restaurantSnapshot = await restaurantDocumentSnapshot(data.restaurantID)
+    const restaurant = restaurantSnapshot.data()
+    const newTotalRatings = restaurant.totalRatings - 1
+    const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) - rating.stars) / newTotalRatings
+
     const db = admin.firestore()
-    const docReference = db.collection("ratings").doc(data.id)
+    const batch = db.batch()
+
+    batch.delete(ratingDocRef)
+    batch.update(restaurantSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating })
+
     try {
-        return await docReference.delete()
+        return await batch.commit()
     } catch (error) {
         throw new functions.https.HttpsError('failed-precondition', 'Error happened deleting the rating');  
     }

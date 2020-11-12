@@ -51,3 +51,4 @@ exports.verifyIsRestaurantOwnerUser = verifyIsRestaurantOwnerUser
 exports.isRestaurantOwnerUser = isRestaurantOwnerUser
 exports.verifyIsRaterUser = verifyIsRaterUser
 exports.verifyAuth = verifyAuth
+exports.findUser = findUser
