@@ -48,6 +48,12 @@ exports.addRating = functions.https.onCall(async (data, context) => {
     const newTotalRatings = restaurant.totalRatings + 1
     const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) + data.stars) / newTotalRatings
     
+    const visitDate = new admin.firestore.Timestamp(parseInt(data.visitDate), 0)
+    
+    if (visitDate.toDate().getTime() > new Date().getTime()) {
+        throw new functions.https.HttpsError('failed-precondition', 'Cannot add a rating in the future');  
+    }
+    
     let rating = {
         visitDate: new admin.firestore.Timestamp(parseInt(data.visitDate), 0),
         restaurantID: data.restaurantID,
