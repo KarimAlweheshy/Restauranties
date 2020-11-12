@@ -18,9 +18,10 @@ struct RestaurantCellNormalViewModel {
 // MARK: - RestaurantCellViewModel
 extension RestaurantCellNormalViewModel: RestaurantCellViewModel {
     func configure(cell: RestaurantListCell) {
-        cell.averageRatingsLabel.text = "\(restaurant.averageRating)/5.0"
+        let avgRating = String(format: "%.2f", restaurant.averageRating)
+        cell.averageRatingsLabel.text = "Rating: \(avgRating)/5.0"
         cell.nameLabel.text = restaurant.name
-        cell.numberOfRatingsLabel.text = "\(restaurant.totalRatings)"
+        cell.numberOfRatingsLabel.text = "Total ratings: \(restaurant.totalRatings)"
         if restaurant.totalRatings == 0 {
             cell.numberOfRatingsLabel.text = "Not enough data to show ratings"
             cell.averageRatingsLabel.isHidden = true

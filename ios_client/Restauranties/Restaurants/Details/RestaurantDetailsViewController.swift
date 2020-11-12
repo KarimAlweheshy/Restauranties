@@ -52,6 +52,7 @@ extension RestaurantDetailsViewController {
 extension RestaurantDetailsViewController: RestaurantDetailsView {
     func reload() {
         tableView.reloadData()
+        setupUI()
     }
 
     func popRateFormViewController() {
