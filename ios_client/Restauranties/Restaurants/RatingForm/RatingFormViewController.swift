@@ -95,5 +95,7 @@ extension RatingFormViewController {
         commentTextView.layer.borderWidth = 1
         commentTextView.layer.borderColor = UIColor.secondarySystemBackground.cgColor
         commentTextView.layer.cornerRadius = 3
+
+        datePicker.maximumDate = Date()
     }
 }
