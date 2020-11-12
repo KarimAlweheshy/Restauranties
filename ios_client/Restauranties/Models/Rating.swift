@@ -10,6 +10,8 @@ import Foundation
 struct Rating: Codable {
     let stars: Int
     let comment: String
-    let dateOfVisit: Date
+    let username: String
+    let photoURL: URL?
+    let visitDate: Date
     let creationDate: Date
 }

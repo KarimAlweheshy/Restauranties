@@ -22,18 +22,13 @@ final class RestaurantDetailsRaterViewModel {
 
 extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
     func viewDidLoad() {
-        Functions.functions().httpsCallable("restaurantRatings").call(["restaurantID": restaurant.id]) { [weak self] result, error in
-            guard let self = self else { return }
-            defer { self.view?.reload() }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            guard
-                let data = result?.data,
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let restaurants = try? decoder.decode([Rating].self, from: jsonData)
-            else { return self.ratings = [] }
-            self.ratings = restaurants
-        }
+        refreshData()
+    }
+
+    func ratingFormViewModel() -> RatingFormViewModel {
+        let viewModel = RatingFormRatingViewModel(restaurant: restaurant)
+        viewModel.delegate = self
+        return viewModel
     }
 
     func restaurantAverageRatingsString() -> String {
@@ -57,5 +52,33 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
     func ratingCellViewModel(for indexPath: IndexPath) -> RestaurantRatingCellViewModel {
         let rating = ratings[indexPath.row]
         return RestaurantRatingCellRaterViewModel(rating: rating)
+    }
+}
+
+// MARK: - RatingFormViewModelDelegate
+
+extension RestaurantDetailsRaterViewModel: RatingFormRatingViewModelDelegate {
+    func didFinish() {
+        refreshData()
+        view?.popRateFormViewController()
+    }
+}
+
+// MARK: - Private Methods
+
+extension RestaurantDetailsRaterViewModel {
+    private func refreshData() {
+        Functions.functions().httpsCallable("restaurantRatings").call(["restaurantID": restaurant.id]) { [weak self] result, error in
+            guard let self = self else { return }
+            defer { self.view?.reload() }
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .secondsSince1970
+            guard
+                let data = result?.data,
+                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
+                let ratings = try? decoder.decode([Rating].self, from: jsonData)
+            else { return self.ratings = [] }
+            self.ratings = ratings
+        }
     }
 }

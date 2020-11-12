@@ -23,6 +23,12 @@ final class RestaurantRatingCellRaterViewModel {
 
 extension RestaurantRatingCellRaterViewModel: RestaurantRatingCellViewModel {
     func configure(cell: RestaurantRatingCell) {
-
+        cell.commentLabel.text = "Comment: \(rating.comment)"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        cell.dateOfVisitLabel.text = dateFormatter.string(from: rating.visitDate)
+        cell.usernameLabel.text = rating.username
+        cell.userImageView.image = ImageWithInitialsGenerator().generate(for: rating.username)
+        cell.ratingLabel.text = "Rating: \(rating.stars)\\5"
     }
 }

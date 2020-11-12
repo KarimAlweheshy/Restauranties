@@ -20,6 +20,7 @@ extension RestaurantCellNormalViewModel: RestaurantCellViewModel {
     func configure(cell: RestaurantListCell) {
         cell.averageRatingsLabel.text = "\(restaurant.averageRating)/5.0"
         cell.nameLabel.text = restaurant.name
+        cell.numberOfRatingsLabel.text = "\(restaurant.totalRatings)"
         if restaurant.totalRatings == 0 {
             cell.numberOfRatingsLabel.text = "Not enough data to show ratings"
             cell.averageRatingsLabel.isHidden = true

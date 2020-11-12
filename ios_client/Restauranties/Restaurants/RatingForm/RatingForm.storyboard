@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="SJa-UF-jqi">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Add Rating-->
+        <scene sceneID="K7c-u2-c92">
+            <objects>
+                <viewController id="SJa-UF-jqi" customClass="RatingFormViewController" customModule="Restauranties" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8Sa-cy-IQb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RKq-Gw-lXN">
+                                <rect key="frame" x="10" y="98" width="394" height="432.5"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="BBk-Fl-rYo">
+                                        <rect key="frame" x="5" y="5" width="384" height="422.5"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="KIl-Q8-ac1">
+                                                <rect key="frame" x="0.0" y="0.0" width="384" height="216"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="251" text="Visit Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e2g-yN-4xn">
+                                                        <rect key="frame" x="0.0" y="0.0" width="73" height="216"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" id="1YV-tY-QUA">
+                                                        <rect key="frame" x="81" y="0.0" width="303" height="216"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                                        <connections>
+                                                            <action selector="didChangeDate" destination="SJa-UF-jqi" eventType="valueChanged" id="k2m-1s-Fgf"/>
+                                                        </connections>
+                                                    </datePicker>
+                                                </subviews>
+                                            </stackView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="r7Z-ra-gmp">
+                                                <rect key="frame" x="0.0" y="224" width="384" height="34"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="251" text="Starts" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3NW-LH-fTC">
+                                                        <rect key="frame" x="0.0" y="0.0" width="73" height="34"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yl4-Of-tl0">
+                                                        <rect key="frame" x="81" y="0.0" width="303" height="34"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="999" constant="200" id="QBS-Pd-VVw"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                        <textInputTraits key="textInputTraits"/>
+                                                    </textField>
+                                                </subviews>
+                                            </stackView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ZcO-s3-xWN">
+                                                <rect key="frame" x="0.0" y="266" width="384" height="156.5"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter Comment in Field Below:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OzS-Gi-FML">
+                                                        <rect key="frame" x="0.0" y="0.0" width="384" height="20.5"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="998" verticalCompressionResistancePriority="1000" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="enn-WS-j4Y">
+                                                        <rect key="frame" x="0.0" y="28.5" width="384" height="128"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" priority="999" constant="128" id="lhN-EU-Zcu"/>
+                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="999" constant="128" id="n8x-j2-K4A"/>
+                                                        </constraints>
+                                                        <color key="textColor" systemColor="labelColor"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                        <connections>
+                                                            <outlet property="delegate" destination="SJa-UF-jqi" id="Qlg-sp-UXF"/>
+                                                        </connections>
+                                                    </textView>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="1YV-tY-QUA" firstAttribute="width" secondItem="yl4-Of-tl0" secondAttribute="width" id="9Kk-Fj-Egw"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="BBk-Fl-rYo" secondAttribute="trailing" constant="5" id="TOL-cv-MiW"/>
+                                    <constraint firstAttribute="bottom" secondItem="BBk-Fl-rYo" secondAttribute="bottom" constant="5" id="VOh-Zd-XWh"/>
+                                    <constraint firstItem="BBk-Fl-rYo" firstAttribute="leading" secondItem="RKq-Gw-lXN" secondAttribute="leading" constant="5" id="W5d-4x-qjP"/>
+                                    <constraint firstItem="BBk-Fl-rYo" firstAttribute="top" secondItem="RKq-Gw-lXN" secondAttribute="top" constant="5" id="fFr-IH-BiX"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Nc2-up-fyn"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="RKq-Gw-lXN" firstAttribute="top" secondItem="Nc2-up-fyn" secondAttribute="top" constant="10" id="1VK-oq-MT8"/>
+                            <constraint firstItem="Nc2-up-fyn" firstAttribute="trailing" secondItem="RKq-Gw-lXN" secondAttribute="trailing" constant="10" id="jAG-Ig-l4O"/>
+                            <constraint firstItem="RKq-Gw-lXN" firstAttribute="leading" secondItem="Nc2-up-fyn" secondAttribute="leading" constant="10" id="zEV-au-V4q"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Add Rating" id="zji-pH-drr">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="Ipa-HT-okt">
+                            <connections>
+                                <action selector="didChangeDone" destination="SJa-UF-jqi" id="uRT-UT-xP9"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="commentTextView" destination="enn-WS-j4Y" id="c93-wM-cA5"/>
+                        <outlet property="datePicker" destination="1YV-tY-QUA" id="LBC-Ny-V5s"/>
+                        <outlet property="starsPicker" destination="MOY-3n-TNL" id="b7H-I2-dLV"/>
+                        <outlet property="starsTextField" destination="yl4-Of-tl0" id="fHC-A2-PRw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FWk-dV-RlG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <pickerView contentMode="scaleToFill" id="MOY-3n-TNL">
+                    <rect key="frame" x="0.0" y="0.0" width="343" height="216"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <outlet property="dataSource" destination="SJa-UF-jqi" id="Dnw-Y9-5cd"/>
+                        <outlet property="delegate" destination="SJa-UF-jqi" id="fre-Fe-XSX"/>
+                    </connections>
+                </pickerView>
+            </objects>
+            <point key="canvasLocation" x="-124" y="-7"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

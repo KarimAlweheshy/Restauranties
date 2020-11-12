@@ -9,6 +9,7 @@ import UIKit
 
 protocol RestaurantDetailsView: AnyObject {
     func reload()
+    func popRateFormViewController()
 }
 
 final class RestaurantDetailsViewController: UIViewController {
@@ -36,11 +37,25 @@ final class RestaurantDetailsViewController: UIViewController {
     }
 }
 
+// MARK: - Actions
+
+extension RestaurantDetailsViewController {
+    @IBAction private func didTapRate() {
+        let viewModel = self.viewModel.ratingFormViewModel()
+        let viewController = RatingFormViewControllerFactory().make(viewModel: viewModel)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
 // MARK: - RestaurantDetailsView
 
 extension RestaurantDetailsViewController: RestaurantDetailsView {
     func reload() {
         tableView.reloadData()
+    }
+
+    func popRateFormViewController() {
+        navigationController?.popViewController(animated: true)
     }
 }
 

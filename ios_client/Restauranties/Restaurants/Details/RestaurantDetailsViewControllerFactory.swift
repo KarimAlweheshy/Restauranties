@@ -13,6 +13,7 @@ final class RestaurantDetailsViewControllerFactory {
         let viewController = storyboard.instantiateInitialViewController { coder -> RestaurantDetailsViewController? in
             RestaurantDetailsViewController(coder: coder, viewModel: viewModel)
         }
+        viewModel.view = viewController
         return viewController!
     }
 }
