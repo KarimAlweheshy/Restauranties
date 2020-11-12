@@ -33,12 +33,12 @@
         "queryScope": "COLLECTION",
         "fields": [
           {
-              "fieldPath": "creationDate",
+              "fieldPath": "restaurantID",
               "order": "ASCENDING"
           },
           {
-              "fieldPath": "restaurantID",
-              "order": "ASCENDING"
+              "fieldPath": "visitDate",
+              "order": "DESCENDING"
           }
         ]
       }

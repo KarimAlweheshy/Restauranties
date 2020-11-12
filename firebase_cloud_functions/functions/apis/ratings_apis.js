@@ -13,17 +13,27 @@ exports.restaurantRatings = functions.https.onCall(async (data, context) => {
     const _assertRestaurantExists = await restaurantDocumentSnapshot(data.restaurantID)
     
     const db = admin.firestore()
-    const ratingsCollection = db.collection("ratings").orderBy("creationDate")
+    const ratingsCollection = db.collection("ratings").orderBy("visitDate", 'desc')
     const snapshot = await ratingsCollection.where('restaurantID', '==', data.restaurantID).get()
     if (!snapshot.docs) { return [] }
 
     var ratings = snapshot.docs.map(doc => doc.data())
     const userIDs = ratings.map(rating => { return { uid: rating.ownerID } })
-    const users = await admin.auth().getUsers(userIDs)
-    ratings = ratings.map((rating, index) => {
-        const user = users[index]
-        rating.username = user.username
+    const usersResult = await admin.auth().getUsers(userIDs)
+    if (usersResult.notFound.length > 0) {
+        throw new functions.https.HttpsError('failed-precondition', 'Couldn\'t find all raters with ids ' + usersResult.notFound);  
+    }
+    var userMap = new Map()
+    usersResult.users.map(user => {
+        userMap.set(user.uid, user); 
+    })
+    ratings = ratings.map(rating => {
+        const user = userMap.get(rating.ownerID)
+        rating.username = user.displayName
         rating.photoURL = user.photoURL
+        rating.visitDate = rating.visitDate._seconds
+        rating.creationDate = rating.creationDate._seconds
+        rating.modificationDate = rating.modificationDate._seconds
         return rating
     })
 
@@ -32,17 +42,16 @@ exports.restaurantRatings = functions.https.onCall(async (data, context) => {
 
 exports.addRating = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
-    userUtilities.verifyIsRaterUser(context, context.auth.uid)
+    userUtilities.verifyIsRaterUser(admin, context.auth.uid)
 
     ratingUtilities.verifyRatingKeysAndValues(data)
-    const restaurantDocumentSnapshot = await restaurantDocumentSnapshot(data.restaurantID)
-    const restaurant = restaurantDocumentSnapshot.data()
+    const documentSnapshot = await restaurantDocumentSnapshot(data.restaurantID)
+    const restaurant = documentSnapshot.data()
     const newTotalRatings = restaurant.totalRatings + 1
-    const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) + rating.stars) / newTotalRatings
-    await restaurantDocumentSnapshot.ref.update({ totalRatings: newTotalRatings, averageRating: newAverageRating })
-
+    const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) + data.stars) / newTotalRatings
+    
     let rating = {
-        visitDate: data.visitDate,
+        visitDate: new admin.firestore.Timestamp(parseInt(data.visitDate), 0),
         restaurantID: data.restaurantID,
         ownerID: context.auth.uid,
         stars: data.stars,
@@ -54,13 +63,15 @@ exports.addRating = functions.https.onCall(async (data, context) => {
     const db = admin.firestore()
     const ratingsCollection = db.collection("ratings")
     const docReference = await ratingsCollection.add(rating)
-    const documentSnapshot = await docReference.get()
-    return documentSnapshot.data()
+
+    await documentSnapshot.ref.update({ totalRatings: newTotalRatings, averageRating: newAverageRating })
+    const newDocumentSnapshot = await docReference.get()
+    return newDocumentSnapshot.data()
 });
 
 exports.deleteRating = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
-    userUtilities.verifyIsAdminUser(context, context.auth.uid)
+    userUtilities.verifyIsAdminUser(admin, context.auth.uid)
 
     const db = admin.firestore()
     const docReference = db.collection("ratings").doc(data.id)
@@ -79,5 +90,5 @@ async function restaurantDocumentSnapshot(restaurantID) {
         throw new functions.https.HttpsError('failed-precondition', 'Restaurant does not exist');
     }
 
-    return restaurantSnapshot.data()
+    return restaurantSnapshot
 }
