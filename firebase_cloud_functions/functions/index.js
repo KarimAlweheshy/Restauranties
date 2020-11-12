@@ -13,6 +13,7 @@ db.settings({ ignoreUndefinedProperties: true })
 exports.addRestaurant = restaurants_apis.addRestaurant
 exports.allRestaurants = restaurants_apis.allRestaurants
 exports.myRestaurants = restaurants_apis.myRestaurants
+exports.restaurantDetails = restaurants_apis.restaurantDetails
 
 exports.becomeAdmin = user_rights_apis.becomeAdmin
 exports.becomeOwner = user_rights_apis.becomeOwner

@@ -31,6 +31,22 @@ exports.allRestaurants = functions.https.onCall(async (data, context) => {
       return data
     })
 });
+
+exports.restaurantDetails = functions.https.onCall(async (data, context) => {
+  userUtilities.verifyAuth(context)
+  const db = admin.firestore()
+
+  if (!data.restaurantID) {
+    throw new functions.https.HttpsError('failed-precondition', 'Missing restaurantID arg');  
+  }
+
+  const restaurantsRef = db.collection("restaurants").doc(data.restaurantID)
+  const snapshot = await restaurantsRef.get()
+  var restaurant =  snapshot.data()
+  restaurant = restaurantUtilities.rewriteTimestampToISO(restaurant)
+  restaurant.id = snapshot.id
+  return restaurant
+});
   
 exports.addRestaurant = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)

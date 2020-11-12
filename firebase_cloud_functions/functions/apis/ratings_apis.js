@@ -24,9 +24,7 @@ exports.restaurantRatings = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('failed-precondition', 'Couldn\'t find all raters with ids ' + usersResult.notFound);  
     }
     var userMap = new Map()
-    usersResult.users.map(user => {
-        userMap.set(user.uid, user); 
-    })
+    usersResult.users.map(user => userMap.set(user.uid, user))
     ratings = ratings.map(rating => {
         const user = userMap.get(rating.ownerID)
         rating.username = user.displayName
