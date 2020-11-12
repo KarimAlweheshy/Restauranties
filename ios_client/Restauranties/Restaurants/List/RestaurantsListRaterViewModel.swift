@@ -18,13 +18,18 @@ final class RestaurantsListRaterViewModel {
 // MARK: - RestaurantsListViewModel
 
 extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
-    func viewDidLoad() {
+    func refresh() {
         var data: [String: Any]?
         if let selectedFilter = selectedFilter {
             data = ["filter": selectedFilter]
         }
+        view?.showLoading(true)
         Functions.functions().httpsCallable("allRestaurants").call(data) { [weak self] result, error in
             guard let self = self else { return }
+            defer {
+                self.view?.showLoading(false)
+                self.view?.reload()
+            }
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .secondsSince1970
             guard
@@ -33,7 +38,6 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
                 let restaurants = try? decoder.decode([Restaurant].self, from: jsonData)
             else { return self.restaurants = [] }
             self.restaurants = restaurants
-            self.view?.reload()
         }
     }
 
@@ -71,7 +75,10 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
 
     func viewModelForSelectedRestaurant(at indexPath: IndexPath) -> RestaurantDetailsViewModel {
         let restaurant = restaurants[indexPath.row]
-        return RestaurantDetailsRaterViewModel(restaurant: restaurant)
+        return RestaurantDetailsRaterViewModel(
+            restaurant: restaurant,
+            isUserRater: true
+        )
     }
 }
 
@@ -92,7 +99,7 @@ extension RestaurantsListRaterViewModel: RestaurantsFilterDataSource {
 
 extension RestaurantsListRaterViewModel: RestaurantsFilterDelegate {
     func didSelectFilter(at row: Int?) {
-        defer { viewDidLoad() }
+        defer { refresh() }
         guard let row = row else { return selectedFilter = nil }
         selectedFilter = filters()[row]
     }

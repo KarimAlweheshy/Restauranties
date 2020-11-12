@@ -10,11 +10,13 @@ import Firebase
 
 final class RestaurantDetailsRaterViewModel {
     weak var view: RestaurantDetailsView?
+    private let isUserRater: Bool
     private var restaurant: Restaurant
     private var ratings = [Rating]()
 
-    init(restaurant: Restaurant) {
+    init(restaurant: Restaurant, isUserRater: Bool) {
         self.restaurant = restaurant
+        self.isUserRater = isUserRater
     }
 }
 
@@ -22,7 +24,7 @@ final class RestaurantDetailsRaterViewModel {
 
 extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
     func viewDidLoad() {
-        refreshData()
+        refresh()
     }
 
     func ratingFormViewModel() -> RatingFormViewModel {
@@ -50,9 +52,18 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
         ratings.count
     }
 
+    func canShowRateButton() -> Bool {
+        isUserRater
+    }
+
     func ratingCellViewModel(for indexPath: IndexPath) -> RestaurantRatingCellViewModel {
         let rating = ratings[indexPath.row]
         return RestaurantRatingCellRaterViewModel(rating: rating)
+    }
+
+    func refresh() {
+        refreshRatings()
+        refreshRestaurant()
     }
 }
 
@@ -60,7 +71,7 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
 
 extension RestaurantDetailsRaterViewModel: RatingFormRatingViewModelDelegate {
     func didFinish() {
-        refreshData()
+        refresh()
         view?.popRateFormViewController()
     }
 }
@@ -68,15 +79,14 @@ extension RestaurantDetailsRaterViewModel: RatingFormRatingViewModelDelegate {
 // MARK: - Private Methods
 
 extension RestaurantDetailsRaterViewModel {
-    private func refreshData() {
-        refreshRatings()
-        refreshRestaurant()
-    }
-
     private func refreshRatings() {
+        view?.showLoading(true)
         Functions.functions().httpsCallable("restaurantRatings").call(["restaurantID": restaurant.id]) { [weak self] result, error in
             guard let self = self else { return }
-            defer { self.view?.reload() }
+            defer {
+                self.view?.showLoading(false)
+                self.view?.reload()
+            }
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .secondsSince1970
             guard

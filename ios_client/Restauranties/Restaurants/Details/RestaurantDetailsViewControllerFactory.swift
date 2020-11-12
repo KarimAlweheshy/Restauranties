@@ -8,7 +8,9 @@
 import UIKit
 
 final class RestaurantDetailsViewControllerFactory {
-    func make(viewModel: RestaurantDetailsViewModel) -> RestaurantDetailsViewController {
+    func make(
+        viewModel: RestaurantDetailsViewModel
+    ) -> RestaurantDetailsViewController {
         let storyboard = UIStoryboard(name: "RestaurantDetails", bundle: nil)
         let viewController = storyboard.instantiateInitialViewController { coder -> RestaurantDetailsViewController? in
             RestaurantDetailsViewController(coder: coder, viewModel: viewModel)

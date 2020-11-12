@@ -9,6 +9,7 @@ import UIKit
 
 protocol RestaurantsListView: AnyObject {
     func reload()
+    func showLoading(_ isLoading: Bool)
 }
 
 final class RestaurantsListViewController: UIViewController {
@@ -34,7 +35,11 @@ final class RestaurantsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        viewModel.viewDidLoad()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.refresh()
     }
 }
 
@@ -43,6 +48,13 @@ final class RestaurantsListViewController: UIViewController {
 extension RestaurantsListViewController: RestaurantsListView {
     func reload() {
         tableView.reloadData()
+    }
+
+    func showLoading(_ isLoading: Bool) {
+        let refreshControl = tableView.refreshControl
+        _ = isLoading
+            ? refreshControl?.beginRefreshing()
+            : refreshControl?.endRefreshing()
     }
 }
 
@@ -74,15 +86,25 @@ extension RestaurantsListViewController: UITableViewDelegate {
 // MARK: - Actions
 
 extension RestaurantsListViewController {
+    @objc private func didPullToRefresh() {
+        viewModel.refresh()
+    }
+
     @objc private func didTapAddNewRestaurant() {
         let viewController = RestaurantFormViewControllerFactory().makeNewRestaurant()
-        navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.pushViewController(
+            viewController,
+            animated: true
+        )
     }
 
     @objc private func didTapFilter() {
         let viewController = RestaurantsFilterViewController.make(dataSource: viewModel.filtersDataSource())
         viewController.delegate = viewModel.filtersDelegate()
-        navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.pushViewController(
+            viewController,
+            animated: true
+        )
     }
 }
 
@@ -100,5 +122,13 @@ extension RestaurantsListViewController {
             barButtonItems += [barButtonItem]
         }
         navigationItem.rightBarButtonItems = barButtonItems
+
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(
+            self,
+            action: #selector(didPullToRefresh),
+            for: .valueChanged
+        )
+        tableView.refreshControl = refreshControl
     }
 }

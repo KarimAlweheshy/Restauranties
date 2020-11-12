@@ -10,6 +10,7 @@ import UIKit
 protocol RestaurantDetailsView: AnyObject {
     func reload()
     func popRateFormViewController()
+    func showLoading(_ isLoading: Bool)
 }
 
 final class RestaurantDetailsViewController: UIViewController {
@@ -45,6 +46,10 @@ extension RestaurantDetailsViewController {
         let viewController = RatingFormViewControllerFactory().make(viewModel: viewModel)
         navigationController?.pushViewController(viewController, animated: true)
     }
+
+    @objc private func didPullToRefresh() {
+        viewModel.refresh()
+    }
 }
 
 // MARK: - RestaurantDetailsView
@@ -52,11 +57,18 @@ extension RestaurantDetailsViewController {
 extension RestaurantDetailsViewController: RestaurantDetailsView {
     func reload() {
         tableView.reloadData()
-        setupUI()
+        refreshHeader()
     }
 
     func popRateFormViewController() {
         navigationController?.popViewController(animated: true)
+    }
+
+    func showLoading(_ isLoading: Bool) {
+        let refreshControl = tableView.refreshControl
+        _ = isLoading
+            ? refreshControl?.beginRefreshing()
+            : refreshControl?.endRefreshing()
     }
 }
 
@@ -87,6 +99,20 @@ extension RestaurantDetailsViewController: UITableViewDelegate {
 
 extension RestaurantDetailsViewController {
     private func setupUI() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(
+            self,
+            action: #selector(didPullToRefresh),
+            for: .valueChanged
+        )
+        tableView.refreshControl = refreshControl
+        refreshHeader()
+        if !viewModel.canShowRateButton() {
+            navigationItem.rightBarButtonItems = []
+        }
+    }
+
+    private func refreshHeader() {
         restaurantNameLabel.text = viewModel.restaurantName()
         restaurantAverageRatingsLabel.text = viewModel.restaurantAverageRatingsString()
         restaurantTotalRatingsLabel.text = viewModel.restaurantTotalRatingsString()

@@ -17,9 +17,13 @@ final class RestaurantsListOwnerViewModel {
 // MARK: - RestaurantsListViewModel
 
 extension RestaurantsListOwnerViewModel: RestaurantsListViewModel {
-    func viewDidLoad() {
+    func refresh() {
         Functions.functions().httpsCallable("myRestaurants").call() { [weak self] result, error in
             guard let self = self else { return }
+            defer {
+                self.view?.showLoading(false)
+                self.view?.reload()
+            }
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .secondsSince1970
             guard
@@ -28,7 +32,6 @@ extension RestaurantsListOwnerViewModel: RestaurantsListViewModel {
                 let restaurants = try? decoder.decode([Restaurant].self, from: jsonData)
             else { return self.restaurants = [] }
             self.restaurants = restaurants
-            self.view?.reload()
         }
     }
 
@@ -66,6 +69,9 @@ extension RestaurantsListOwnerViewModel: RestaurantsListViewModel {
 
     func viewModelForSelectedRestaurant(at indexPath: IndexPath) -> RestaurantDetailsViewModel {
         let restaurant = restaurants[indexPath.row]
-        return RestaurantDetailsRaterViewModel(restaurant: restaurant)
+        return RestaurantDetailsRaterViewModel(
+            restaurant: restaurant,
+            isUserRater: false
+        )
     }
 }

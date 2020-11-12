@@ -11,7 +11,9 @@ protocol RestaurantDetailsViewModel: AnyObject {
     var view: RestaurantDetailsView? { get set }
     
     func viewDidLoad()
-    
+    func refresh()
+
+    func canShowRateButton() -> Bool
     func restaurantAverageRatingsString() -> String
     func restaurantTotalRatingsString() -> String
     func restaurantName() -> String
