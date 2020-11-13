@@ -29,6 +29,11 @@ final class ProfileViewController: UIViewController {
         fatalError()
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        refreshView()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         refreshView()
@@ -65,14 +70,11 @@ extension ProfileViewController {
         userImageView.image = ImageWithInitialsGenerator().generate(for: viewModel.displayName ?? "")
         isVerifiedImageView.image = UIImage(systemName: viewModel.isEmailVerified ? "checkmark.seal" : "xmark.seal")
 
-        viewModel.refreshedViewModel { [weak self] viewModel in
-            guard let self = self else { return }
-            self.showChangeRightButtonLoading(false)
-            self.viewModel = viewModel
-            self.changeUserRightContainer.isHidden = viewModel.isChangeUserRightContainerHidden
-            self.userTypeLabel.text = viewModel.userType
-            self.changeUserRightButton.setTitle(viewModel.changeUserRightButtonText, for: .normal)
-        }
+        changeUserRightContainer.isHidden = viewModel.isChangeUserRightContainerHidden
+        userTypeLabel.text = viewModel.userType
+        changeUserRightButton.setTitle(viewModel.changeUserRightButtonText, for: .normal)
+
+        viewModel.refreshedViewModel()
     }
 
     private func showChangeRightButtonLoading(_ isLoading: Bool) {

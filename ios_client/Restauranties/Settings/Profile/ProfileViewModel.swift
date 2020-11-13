@@ -10,6 +10,7 @@ import FirebaseAuth
 import FirebaseFunctions
 
 protocol ProfileViewModel {
+    var delegate: HomeViewControllerDelegate? { get set }
     var user: User { get }
     var userType: String { get }
     var isChangeUserRightContainerHidden: Bool { get }
@@ -22,17 +23,14 @@ extension ProfileViewModel {
     var userEmail: String? { user.email }
     var isEmailVerified: Bool { user.isEmailVerified }
 
-    func refreshedViewModel(completionHandler: @escaping (ProfileViewModel) -> Void) {
+    func refreshedViewModel() {
         user.getIDTokenResult(forcingRefresh: true) { result, error in
-            if let result = result {
-                switch UserRight(claims: result.claims) {
-                case .admin: completionHandler(ProfileAdminViewModel(user: user))
-                case .restaurantOwner: completionHandler(ProfileRestaurantOwnerViewModel(user: user))
-                case .rater: completionHandler(ProfileRaterViewModel(user: user))
-                case .unknown: fatalError()
-                }
-            } else {
-                completionHandler(ProfileUnknownViewModel(user: user))
+            guard let result = result else { return }
+            switch UserRight(claims: result.claims) {
+            case .admin: delegate?.didChangeUserPermission(.admin)
+            case .restaurantOwner: delegate?.didChangeUserPermission(.restaurantOwner)
+            case .rater: delegate?.didChangeUserPermission(.rater)
+            case .unknown: fatalError()
             }
         }
     }
@@ -49,6 +47,8 @@ extension ProfileViewModel {
 }
 
 struct ProfileAdminViewModel: ProfileViewModel {
+    weak var delegate: HomeViewControllerDelegate?
+
     let user: User
     let changeRightsCallableHTTPS = "becomeRater"
     let changeUserRightButtonText = "Become Rater"
@@ -57,6 +57,8 @@ struct ProfileAdminViewModel: ProfileViewModel {
 }
 
 struct ProfileRestaurantOwnerViewModel: ProfileViewModel {
+    weak var delegate: HomeViewControllerDelegate?
+
     let user: User
     let changeRightsCallableHTTPS = "becomeAdmin"
     let changeUserRightButtonText = "Become Admin"
@@ -65,6 +67,8 @@ struct ProfileRestaurantOwnerViewModel: ProfileViewModel {
 }
 
 struct ProfileRaterViewModel: ProfileViewModel {
+    weak var delegate: HomeViewControllerDelegate?
+
     let user: User
     let changeRightsCallableHTTPS = "becomeOwner"
     let changeUserRightButtonText = "Become Restaurant Owner"
@@ -73,6 +77,8 @@ struct ProfileRaterViewModel: ProfileViewModel {
 }
 
 struct ProfileUnknownViewModel: ProfileViewModel {
+    weak var delegate: HomeViewControllerDelegate?
+
     let user: User
     let changeRightsCallableHTTPS = ""
     let changeUserRightButtonText = ""
