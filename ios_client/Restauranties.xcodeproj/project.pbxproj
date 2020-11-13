@@ -45,7 +45,6 @@
 		F6AB8393255007C3000DB39E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8392255007C3000DB39E /* SceneDelegate.swift */; };
 		F6AB8395255007C3000DB39E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8394255007C3000DB39E /* HomeViewController.swift */; };
 		F6AB839A255007C7000DB39E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6AB8399255007C7000DB39E /* Assets.xcassets */; };
-		F6AB839D255007C7000DB39E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F6AB839B255007C7000DB39E /* LaunchScreen.storyboard */; };
 		F6AB83A8255007C8000DB39E /* RestaurantiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB83A7255007C8000DB39E /* RestaurantiesTests.swift */; };
 		F6AB83B3255007C8000DB39E /* RestaurantiesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AB83B2255007C8000DB39E /* RestaurantiesUITests.swift */; };
 		F6AB842D25501BED000DB39E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6AB842C25501BED000DB39E /* GoogleService-Info.plist */; };
@@ -124,7 +123,6 @@
 		F6AB8392255007C3000DB39E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F6AB8394255007C3000DB39E /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		F6AB8399255007C7000DB39E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F6AB839C255007C7000DB39E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F6AB839E255007C7000DB39E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F6AB83A3255007C8000DB39E /* RestaurantiesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestaurantiesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6AB83A7255007C8000DB39E /* RestaurantiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantiesTests.swift; sourceTree = "<group>"; };
@@ -292,7 +290,6 @@
 				F6E6ED1B255022AC000C219D /* Settings */,
 				F6AB843C25502054000DB39E /* Home */,
 				F6AB8399255007C7000DB39E /* Assets.xcassets */,
-				F6AB839B255007C7000DB39E /* LaunchScreen.storyboard */,
 				F6AB839E255007C7000DB39E /* Info.plist */,
 			);
 			path = Restauranties;
@@ -499,7 +496,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6AB839D255007C7000DB39E /* LaunchScreen.storyboard in Resources */,
 				F661F40C2551B6EB0096E6D8 /* UsersList.storyboard in Resources */,
 				F6AB842D25501BED000DB39E /* GoogleService-Info.plist in Resources */,
 				F6E6ED8E25505BA0000C219D /* RestaurantsList.storyboard in Resources */,
@@ -740,17 +736,6 @@
 			targetProxy = F6AB83AF255007C8000DB39E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		F6AB839B255007C7000DB39E /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F6AB839C255007C7000DB39E /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		F6AB83B5255007C8000DB39E /* Debug */ = {
