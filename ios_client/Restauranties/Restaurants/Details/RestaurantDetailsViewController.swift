@@ -21,6 +21,7 @@ final class RestaurantDetailsViewController: UIViewController {
     @IBOutlet private var restaurantAverageRatingsLabel: UILabel!
 
     @IBOutlet private var tableView: UITableView!
+    private lazy var dataSource = makeDataSource()
 
     init?(coder: NSCoder, viewModel: RestaurantDetailsViewModel) {
         self.viewModel = viewModel
@@ -56,7 +57,7 @@ extension RestaurantDetailsViewController {
 
 extension RestaurantDetailsViewController: RestaurantDetailsView {
     func reload() {
-        tableView.reloadData()
+        dataSource.apply(viewModel.ratingsSnapshot())
         refreshHeader()
     }
 
@@ -69,21 +70,6 @@ extension RestaurantDetailsViewController: RestaurantDetailsView {
         _ = isLoading
             ? refreshControl?.beginRefreshing()
             : refreshControl?.endRefreshing()
-    }
-}
-
-// MARK: - UITableViewDataSource
-
-extension RestaurantDetailsViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRatingCells()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantRatingCell", for: indexPath) as! RestaurantRatingCell
-        let cellViewModel = viewModel.ratingCellViewModel(for: indexPath)
-        cellViewModel.configure(cell: cell)
-        return cell
     }
 }
 
@@ -114,6 +100,8 @@ extension RestaurantDetailsViewController: UITableViewDelegate {
 
 extension RestaurantDetailsViewController {
     private func setupUI() {
+        tableView.dataSource = dataSource
+
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(
             self,
@@ -132,4 +120,20 @@ extension RestaurantDetailsViewController {
         restaurantAverageRatingsLabel.text = viewModel.restaurantAverageRatingsString()
         restaurantTotalRatingsLabel.text = viewModel.restaurantTotalRatingsString()
     }
+
+    func makeDataSource() -> UITableViewDiffableDataSource<Int, RestaurantRatingCellViewModelWrapper> {
+            EditableRowDiffableDataSource(
+                tableView: tableView,
+                cellProvider: {  tableView, indexPath, wrapper in
+                    let cell = tableView.dequeueReusableCell(
+                        withIdentifier: "RestaurantRatingCell",
+                        for: indexPath
+                    ) as! RestaurantRatingCell
+
+                    wrapper.cellViewModel.configure(cell: cell)
+
+                    return cell
+                }
+            )
+        }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Rating: Codable {
+struct Rating: Codable, Equatable, Hashable {
     let id: String
     let stars: Int
     let comment: String

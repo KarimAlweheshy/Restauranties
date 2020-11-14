@@ -65,19 +65,24 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
         let rating = ratings[indexPath.row]
         callable.call(["id": rating.id]) { [weak self] result, error in
             guard let self = self, error == nil else { return }
-            self.ratings.remove(at: indexPath.row)
-            self.view?.reload()
+            self.refresh()
         }
-    }
-
-    func ratingCellViewModel(for indexPath: IndexPath) -> RestaurantRatingCellViewModel {
-        let rating = ratings[indexPath.row]
-        return RestaurantRatingCellRaterViewModel(rating: rating)
     }
 
     func refresh() {
         refreshRatings()
         refreshRestaurant()
+    }
+
+    func ratingsSnapshot() -> NSDiffableDataSourceSnapshot<Int, RestaurantRatingCellViewModelWrapper> {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, RestaurantRatingCellViewModelWrapper>()
+        snapshot.appendSections([0])
+        let wrappers = ratings.compactMap { rating -> RestaurantRatingCellViewModelWrapper in
+            let viewModel = RestaurantRatingCellRaterViewModel(rating: rating)
+            return RestaurantRatingCellViewModelWrapper(cellViewModel: viewModel)
+        }
+        snapshot.appendItems(wrappers, toSection: 0)
+        return snapshot
     }
 }
 
@@ -95,7 +100,8 @@ extension RestaurantDetailsRaterViewModel: RatingFormRatingViewModelDelegate {
 extension RestaurantDetailsRaterViewModel {
     private func refreshRatings() {
         view?.showLoading(true)
-        Functions.functions().httpsCallable("restaurantRatings").call(["restaurantID": restaurant.id]) { [weak self] result, error in
+        let callable = Functions.functions().httpsCallable("restaurantRatings")
+        callable.call(["restaurantID": restaurant.id]) { [weak self] result, error in
             guard let self = self else { return }
             defer {
                 self.view?.showLoading(false)
@@ -113,7 +119,8 @@ extension RestaurantDetailsRaterViewModel {
     }
 
     private func refreshRestaurant() {
-        Functions.functions().httpsCallable("restaurantDetails").call(["restaurantID": restaurant.id]) { [weak self] result, error in
+        let callable = Functions.functions().httpsCallable("restaurantDetails")
+        callable.call(["restaurantID": restaurant.id]) { [weak self] result, error in
             guard let self = self else { return }
             defer { self.view?.reload() }
             let decoder = JSONDecoder()

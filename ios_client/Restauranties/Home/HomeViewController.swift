@@ -47,7 +47,10 @@ extension HomeViewController: HomeViewControllerDelegate {
             )
         switch right {
         case .admin:
+            let factory = RestaurantsListViewControllerFactory()
+            let allRestaurantsList = factory.makeForAdmin()
             viewControllers = [
+                UINavigationController(rootViewController: allRestaurantsList),
                 UINavigationController(rootViewController: UsersListViewControllerFactory().make()),
                 profileViewController
             ]
@@ -71,6 +74,7 @@ extension HomeViewController: HomeViewControllerDelegate {
             ]
         }
         profileViewController.loadViewIfNeeded()
+        selectedViewController = viewControllers?.last
     }
 }
 

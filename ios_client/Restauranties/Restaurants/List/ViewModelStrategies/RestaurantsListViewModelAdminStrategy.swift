@@ -1,5 +1,5 @@
 //
-//  RestaurantsListViewModelOwnerStratey.swift
+//  RestaurantsListViewModelAdminStrategy.swift
 //  Restauranties
 //
 //  Created by Karim Alweheshy on 11/14/20.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-final class RestaurantsListViewModelOwnerStratey {}
+final class RestaurantsListViewModelAdminStratey {}
 
 // MARK: - RestaurantsListViewModelStratey
 
-extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey {
+extension RestaurantsListViewModelAdminStratey: RestaurantsListViewModelStratey {
     func cellViewModel(for restaurant: Restaurant) -> RestaurantCellViewModel {
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
@@ -21,11 +21,11 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
     }
 
     func httpsCallablePath() -> String {
-        "myRestaurants"
+        "allRestaurants"
     }
 
     func shouldShowAddRestaurant() -> Bool {
-        true
+        false
     }
 
     func shouldShowFilterRestaurant() -> Bool {
@@ -33,24 +33,24 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
     }
 
     func tabBarSystemImageName() -> String {
-        "books.vertical.fill"
+        "doc.badge.gearshape.fill"
     }
 
     func title() -> String {
-        "My Restaurants"
+        "Restaurants"
     }
 
     func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel {
         RestaurantDetailsRaterViewModel(
             restaurant: selectedRestaurant,
-            userRight: .restaurantOwner
+            userRight: .admin
         )
     }
 }
 
 // MARK: - RestaurantsFilterDataSource
 
-extension RestaurantsListViewModelOwnerStratey {
+extension RestaurantsListViewModelAdminStratey {
     func filters() -> [String] {
         fatalError()
     }
@@ -62,7 +62,7 @@ extension RestaurantsListViewModelOwnerStratey {
 
 // MARK: - RestaurantsFilterDataSource
 
-extension RestaurantsListViewModelOwnerStratey {
+extension RestaurantsListViewModelAdminStratey {
     func didSelectFilter(at row: Int?) {
         fatalError()
     }

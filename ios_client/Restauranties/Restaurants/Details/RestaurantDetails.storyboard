@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hFJ-04-moe">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hFJ-04-moe">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -124,7 +123,7 @@
                                                                     <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" constant="80" id="hXX-at-Ose"/>
-                                                                        <constraint firstAttribute="width" secondItem="Bz0-3h-ol6" secondAttribute="height" id="nnc-Yp-qF0"/>
+                                                                        <constraint firstAttribute="width" secondItem="Bz0-3h-ol6" secondAttribute="height" priority="999" id="nnc-Yp-qF0"/>
                                                                     </constraints>
                                                                     <userDefinedRuntimeAttributes>
                                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -144,7 +143,7 @@
                                                                                     <nil key="textColor"/>
                                                                                     <nil key="highlightedColor"/>
                                                                                 </label>
-                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="Date of visit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aLm-y8-h7r">
+                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" verticalCompressionResistancePriority="999" text="Date of visit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aLm-y8-h7r">
                                                                                     <rect key="frame" x="195.5" y="0.0" width="90.5" height="20.5"/>
                                                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                                     <nil key="textColor"/>
@@ -158,7 +157,7 @@
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="Comment" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vlf-Ne-g9X">
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="999" text="Comment" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vlf-Ne-g9X">
                                                                             <rect key="frame" x="0.0" y="57" width="286" height="20.5"/>
                                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                                             <nil key="textColor"/>
@@ -171,9 +170,9 @@
                                                     </subviews>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="bottom" secondItem="04P-8c-zef" secondAttribute="bottom" constant="10" id="HsH-6Y-Hxy"/>
+                                                        <constraint firstAttribute="bottom" secondItem="04P-8c-zef" secondAttribute="bottom" priority="999" constant="10" id="HsH-6Y-Hxy"/>
                                                         <constraint firstItem="04P-8c-zef" firstAttribute="leading" secondItem="huM-He-XPc" secondAttribute="leading" constant="10" id="Tsk-7c-rZG"/>
-                                                        <constraint firstItem="04P-8c-zef" firstAttribute="top" secondItem="huM-He-XPc" secondAttribute="top" constant="10" id="U3U-qB-8tu"/>
+                                                        <constraint firstItem="04P-8c-zef" firstAttribute="top" secondItem="huM-He-XPc" secondAttribute="top" priority="999" constant="10" id="U3U-qB-8tu"/>
                                                         <constraint firstAttribute="trailing" secondItem="04P-8c-zef" secondAttribute="trailing" constant="10" id="sTQ-KW-ddK"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
@@ -185,10 +184,10 @@
                                             </subviews>
                                             <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                             <constraints>
-                                                <constraint firstItem="huM-He-XPc" firstAttribute="top" secondItem="JxS-rl-8PC" secondAttribute="top" constant="10" id="Hme-BT-sKL"/>
+                                                <constraint firstItem="huM-He-XPc" firstAttribute="top" secondItem="JxS-rl-8PC" secondAttribute="top" priority="999" constant="10" id="Hme-BT-sKL"/>
                                                 <constraint firstItem="huM-He-XPc" firstAttribute="leading" secondItem="JxS-rl-8PC" secondAttribute="leading" constant="10" id="Okf-W0-Pct"/>
                                                 <constraint firstAttribute="trailing" secondItem="huM-He-XPc" secondAttribute="trailing" constant="10" id="Rhf-Fg-UkW"/>
-                                                <constraint firstAttribute="bottom" secondItem="huM-He-XPc" secondAttribute="bottom" constant="10" id="YEy-lM-MWe"/>
+                                                <constraint firstAttribute="bottom" secondItem="huM-He-XPc" secondAttribute="bottom" priority="999" constant="10" id="YEy-lM-MWe"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
@@ -202,7 +201,6 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
-                                    <outlet property="dataSource" destination="hFJ-04-moe" id="bai-MH-Tp2"/>
                                     <outlet property="delegate" destination="hFJ-04-moe" id="Zgr-rd-mnt"/>
                                 </connections>
                             </tableView>

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol RestaurantDetailsViewModel: AnyObject {
     var view: RestaurantDetailsView? { get set }
@@ -21,6 +22,5 @@ protocol RestaurantDetailsViewModel: AnyObject {
     func restaurantName() -> String
     func ratingFormViewModel() -> RatingFormViewModel
     
-    func numberOfRatingCells() -> Int
-    func ratingCellViewModel(for indexPath: IndexPath) -> RestaurantRatingCellViewModel
+    func ratingsSnapshot() -> NSDiffableDataSourceSnapshot<Int, RestaurantRatingCellViewModelWrapper>
 }

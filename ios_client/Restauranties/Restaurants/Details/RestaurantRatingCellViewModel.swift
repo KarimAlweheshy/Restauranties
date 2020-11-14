@@ -7,7 +7,20 @@
 
 import Foundation
 
+struct RestaurantRatingCellViewModelWrapper: Hashable {
+    let cellViewModel: RestaurantRatingCellViewModel
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(cellViewModel.hashValue)
+    }
+
+    static func == (lhs: RestaurantRatingCellViewModelWrapper, rhs: RestaurantRatingCellViewModelWrapper) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+}
+
 protocol RestaurantRatingCellViewModel {
+    var hashValue: Int { get }
     func configure(cell: RestaurantRatingCell)
 }
 
@@ -22,6 +35,10 @@ final class RestaurantRatingCellRaterViewModel {
 // MARK: - RestaurantRatingCellViewModel
 
 extension RestaurantRatingCellRaterViewModel: RestaurantRatingCellViewModel {
+    var hashValue: Int {
+        rating.id.hash
+    }
+
     func configure(cell: RestaurantRatingCell) {
         cell.commentLabel.text = "Comment: \(rating.comment)"
         let dateFormatter = DateFormatter()
