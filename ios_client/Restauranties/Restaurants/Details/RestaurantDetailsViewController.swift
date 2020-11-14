@@ -91,7 +91,22 @@ extension RestaurantDetailsViewController: UITableViewDataSource {
 
 extension RestaurantDetailsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard viewModel.canDeleteRatings() else { return nil }
+        return UISwipeActionsConfiguration(
+            actions: [
+                UIContextualAction(
+                    style: .destructive,
+                    title: "Delete"
+                ) { [weak viewModel] _, _, completionHandler in
+                    viewModel?.didTapDeleteRating(at: indexPath)
+                    completionHandler(true)
+                }
+            ]
+        )
     }
 }
 

@@ -10,13 +10,13 @@ import Firebase
 
 final class RestaurantDetailsRaterViewModel {
     weak var view: RestaurantDetailsView?
-    private let isUserRater: Bool
+    private let userRight: UserRight
     private var restaurant: Restaurant
     private var ratings = [Rating]()
 
-    init(restaurant: Restaurant, isUserRater: Bool) {
+    init(restaurant: Restaurant, userRight: UserRight) {
         self.restaurant = restaurant
-        self.isUserRater = isUserRater
+        self.userRight = userRight
     }
 }
 
@@ -52,8 +52,22 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
         ratings.count
     }
 
+    func canDeleteRatings() -> Bool {
+        userRight == .admin
+    }
+    
     func canShowRateButton() -> Bool {
-        isUserRater
+        userRight == .rater
+    }
+
+    func didTapDeleteRating(at indexPath: IndexPath) {
+        let callable = Functions.functions().httpsCallable("deleteRating")
+        let rating = ratings[indexPath.row]
+        callable.call(["id": rating.id]) { [weak self] result, error in
+            guard let self = self, error == nil else { return }
+            self.ratings.remove(at: indexPath.row)
+            self.view?.reload()
+        }
     }
 
     func ratingCellViewModel(for indexPath: IndexPath) -> RestaurantRatingCellViewModel {

@@ -13,6 +13,8 @@ protocol RestaurantDetailsViewModel: AnyObject {
     func viewDidLoad()
     func refresh()
 
+    func didTapDeleteRating(at indexPath: IndexPath)
+    func canDeleteRatings() -> Bool
     func canShowRateButton() -> Bool
     func restaurantAverageRatingsString() -> String
     func restaurantTotalRatingsString() -> String

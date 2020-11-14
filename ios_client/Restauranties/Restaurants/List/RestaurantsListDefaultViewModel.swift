@@ -1,5 +1,5 @@
 //
-//  RestaurantsListRaterViewModel.swift
+//  RestaurantsListDefaultViewModel.swift
 //  Restauranties
 //
 //  Created by Karim Alweheshy on 11/4/20.
@@ -8,23 +8,37 @@
 import Foundation
 import Firebase
 
-final class RestaurantsListRaterViewModel {
+protocol RestaurantsListViewModelStratey: RestaurantsFilterDataSource, RestaurantsFilterDelegate {
+    func shouldShowFilterRestaurant() -> Bool
+    func cellViewModel(for restaurant: Restaurant) -> RestaurantCellViewModel
+    func shouldShowAddRestaurant() -> Bool
+    func title() -> String
+    func tabBarSystemImageName() -> String
+    func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel
+    func httpsCallablePath() -> String
+    func httpsCallableData() -> [String: Any]
+}
+
+final class RestaurantsListDefaultViewModel {
     weak var view: RestaurantsListView?
 
+    private let strategy: RestaurantsListViewModelStratey
     private var restaurants = [Restaurant]() { didSet { view?.reload() } }
     private var selectedFilter: String? = nil
+
+    init(strategy: RestaurantsListViewModelStratey) {
+        self.strategy = strategy
+    }
 }
 
 // MARK: - RestaurantsListViewModel
 
-extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
+extension RestaurantsListDefaultViewModel: RestaurantsListViewModel {
     func refresh() {
-        var data: [String: Any]?
-        if let selectedFilter = selectedFilter {
-            data = ["filter": selectedFilter]
-        }
         view?.showLoading(true)
-        Functions.functions().httpsCallable("allRestaurants").call(data) { [weak self] result, error in
+        let path = strategy.httpsCallablePath()
+        let callable = Functions.functions().httpsCallable(path)
+        callable.call(strategy.httpsCallableData()) { [weak self] result, error in
             guard let self = self else { return }
             defer {
                 self.view?.showLoading(false)
@@ -42,15 +56,15 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
     }
 
     func shouldShowFilterRestaurant() -> Bool {
-        true
+        strategy.shouldShowFilterRestaurant()
     }
 
     func filtersDataSource() -> RestaurantsFilterDataSource {
-        self
+        strategy
     }
 
     func filtersDelegate() -> RestaurantsFilterDelegate? {
-         self
+        self
     }
 
     func numberOfRows() -> Int {
@@ -58,49 +72,31 @@ extension RestaurantsListRaterViewModel: RestaurantsListViewModel {
     }
 
     func cellViewModel(for indexPath: IndexPath) -> RestaurantCellViewModel {
-        RestaurantCellNormalViewModel(restaurant: restaurants[indexPath.row])
+        strategy.cellViewModel(for: restaurants[indexPath.row])
     }
 
     func shouldShowAddRestaurant() -> Bool {
-        false
+        strategy.shouldShowAddRestaurant()
     }
 
     func title() -> String {
-        "Restaurants"
+        strategy.title()
     }
 
     func tabBarSystemImageName() -> String {
-        "flag.fill"
+        strategy.tabBarSystemImageName()
     }
 
     func viewModelForSelectedRestaurant(at indexPath: IndexPath) -> RestaurantDetailsViewModel {
-        let restaurant = restaurants[indexPath.row]
-        return RestaurantDetailsRaterViewModel(
-            restaurant: restaurant,
-            isUserRater: true
-        )
+        strategy.viewModel(for: restaurants[indexPath.row])
     }
 }
 
 // MARK: - RestaurantsFilterDataSource
 
-extension RestaurantsListRaterViewModel: RestaurantsFilterDataSource {
-    func filters() -> [String] {
-        ["1", "2", "3", "4", "5"]
-    }
-
-    func selectedFilterIndex() -> Int? {
-        guard let selectedFilter = selectedFilter else { return nil }
-        return filters().firstIndex(of: selectedFilter)
-    }
-}
-
-// MARK: - RestaurantsFilterDataSource
-
-extension RestaurantsListRaterViewModel: RestaurantsFilterDelegate {
+extension RestaurantsListDefaultViewModel: RestaurantsFilterDelegate {
     func didSelectFilter(at row: Int?) {
-        defer { refresh() }
-        guard let row = row else { return selectedFilter = nil }
-        selectedFilter = filters()[row]
+        strategy.didSelectFilter(at: row)
+        refresh()
     }
 }

@@ -11,12 +11,12 @@ protocol RestaurantCellViewModel {
     func configure(cell: RestaurantListCell)
 }
 
-struct RestaurantCellNormalViewModel {
+struct RestaurantCellDefaultViewModel {
     let restaurant: Restaurant
 }
 
 // MARK: - RestaurantCellViewModel
-extension RestaurantCellNormalViewModel: RestaurantCellViewModel {
+extension RestaurantCellDefaultViewModel: RestaurantCellViewModel {
     func configure(cell: RestaurantListCell) {
         let avgRating = String(format: "%.2f", restaurant.averageRating)
         cell.averageRatingsLabel.text = "Rating: \(avgRating)/5.0"

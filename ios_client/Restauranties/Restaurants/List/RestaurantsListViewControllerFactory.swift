@@ -10,7 +10,8 @@ import UIKit
 struct RestaurantsListViewControllerFactory {
     func makeForRater() -> RestaurantsListViewController {
         let storyboard = UIStoryboard(name: "RestaurantsList", bundle: nil)
-        let restaurantsListViewModel = RestaurantsListRaterViewModel()
+        let strategy = RestaurantsListViewModelRaterStratey()
+        let restaurantsListViewModel = RestaurantsListDefaultViewModel(strategy: strategy)
         let viewController: RestaurantsListViewController? = storyboard.instantiateInitialViewController { coder in
             RestaurantsListViewController(coder: coder, viewModel: restaurantsListViewModel)
         }
@@ -20,7 +21,8 @@ struct RestaurantsListViewControllerFactory {
 
     func makeForOwner() -> RestaurantsListViewController {
         let storyboard = UIStoryboard(name: "RestaurantsList", bundle: nil)
-        let restaurantsListViewModel = RestaurantsListOwnerViewModel()
+        let strategy = RestaurantsListViewModelOwnerStratey()
+        let restaurantsListViewModel = RestaurantsListDefaultViewModel(strategy: strategy)
         let viewController: RestaurantsListViewController? = storyboard.instantiateInitialViewController { coder in
             RestaurantsListViewController(coder: coder, viewModel: restaurantsListViewModel)
         }
