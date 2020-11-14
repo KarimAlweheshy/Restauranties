@@ -19,7 +19,7 @@ exports.myRestaurants = functions.https.onCall(async (data, context) => {
   
 exports.allRestaurants = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
-    await userUtilities.verifyIsRaterUser(admin, context.auth.uid)
+    await userUtilities.verifyIsNotOwner(admin, context.auth.uid)
     const db = admin.firestore()
     const restaurantsCollection = db.collection("restaurants")
     const filteredRestaurantsCollection = applyRatingFilterOnDocReferenceIfPossible(restaurantsCollection, data)

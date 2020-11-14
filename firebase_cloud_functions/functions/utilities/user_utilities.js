@@ -19,6 +19,13 @@ const verifyIsRaterUser = async (admin, uid) => {
       throw new functions.https.HttpsError('failed-precondition', 'Only Rater is allowed to access such calls');
     }
 }
+
+const verifyIsNotOwner = async (admin, uid) => {
+  const user = await findUser(admin, uid)
+  if (isRestaurantOwnerUser(user)) {
+    throw new functions.https.HttpsError('failed-precondition', 'Owner is not allowed to access this call');
+  }
+}
   
 const verifyIsRestaurantOwnerUser = async (admin, uid) => {
     const user = await findUser(admin, uid)
@@ -52,3 +59,4 @@ exports.isRestaurantOwnerUser = isRestaurantOwnerUser
 exports.verifyIsRaterUser = verifyIsRaterUser
 exports.verifyAuth = verifyAuth
 exports.findUser = findUser
+exports.verifyIsNotOwner = verifyIsNotOwner

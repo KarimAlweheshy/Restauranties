@@ -85,16 +85,17 @@ exports.deleteRating = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     userUtilities.verifyIsAdminUser(admin, context.auth.uid)
 
+    const db = admin.firestore()
+
     const ratingDocRef = db.collection("ratings").doc(data.id)
     const ratingSnapshot = await ratingDocRef.get()
     const rating = ratingSnapshot.data()
 
-    const restaurantSnapshot = await restaurantDocumentSnapshot(data.restaurantID)
+    const restaurantSnapshot = await restaurantDocumentSnapshot(rating.restaurantID)
     const restaurant = restaurantSnapshot.data()
     const newTotalRatings = restaurant.totalRatings - 1
     const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) - rating.stars) / newTotalRatings
 
-    const db = admin.firestore()
     const batch = db.batch()
 
     batch.delete(ratingDocRef)
