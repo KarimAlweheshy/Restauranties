@@ -7,7 +7,7 @@ exports.myRestaurants = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     await userUtilities.verifyIsRestaurantOwnerUser(admin, context.auth.uid)
     const db = admin.firestore()
-    const restaurantsCollection = db.collection("restaurants").orderBy("modificationDate")
+    const restaurantsCollection = db.collection("restaurants").orderBy("creationDate")
     const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
     if (snapshot.empty) { return [] }
     return snapshot.docs.map(doc => {
@@ -23,7 +23,7 @@ exports.allRestaurants = functions.https.onCall(async (data, context) => {
     const db = admin.firestore()
     const restaurantsCollection = db.collection("restaurants")
     const filteredRestaurantsCollection = applyRatingFilterOnDocReferenceIfPossible(restaurantsCollection, data)
-    const snapshot = await filteredRestaurantsCollection.orderBy("modificationDate").get()
+    const snapshot = await filteredRestaurantsCollection.orderBy("creationDate").get()
     if (snapshot.empty) { return [] }
     return snapshot.docs.map(doc => {
       var data = restaurantUtilities.rewriteTimestampToISO(doc.data())
@@ -78,6 +78,7 @@ exports.addRestaurant = functions.https.onCall(async (data, context) => {
 });
 
 function applyRatingFilterOnDocReferenceIfPossible(docReference, data) {
+    docReference = docReference.orderBy('averageRating', 'desc')
     if (!data || !data.filter) {
       return docReference
     }
@@ -95,5 +96,5 @@ function applyRatingFilterOnDocReferenceIfPossible(docReference, data) {
       // To exclude restaurants without ratings
       docReference = docReference.where('averageRating', '>', 0)
     }
-    return docReference.orderBy('averageRating')
+    return docReference
 }

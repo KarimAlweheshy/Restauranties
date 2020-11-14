@@ -17,7 +17,7 @@ exports.restaurantRatings = functions.https.onCall(async (data, context) => {
     const snapshot = await ratingsCollection.where('restaurantID', '==', data.restaurantID).get()
     if (!snapshot.docs) { return [] }
 
-    var ratings = snapshot.docs.map(doc => doc.data())
+    var ratings = snapshot.docs.map(doc => { return { id: doc.id, ...doc.data() }})
     const userIDs = ratings.map(rating => { return { uid: rating.ownerID } })
     const usersResult = await admin.auth().getUsers(userIDs)
     if (usersResult.notFound.length > 0) {
