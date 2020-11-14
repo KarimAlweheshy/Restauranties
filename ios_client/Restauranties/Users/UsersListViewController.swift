@@ -18,19 +18,17 @@ final class UsersListViewController: UIViewController {
         tabBarItem.image = UIImage(systemName: "chart.bar.doc.horizontal.fill")
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        refresh()
+    }
+}
 
-        Functions.functions().httpsCallable("getAllUsers").call() { [weak self] result, error in
-            guard let self = self else { return }
-            guard
-                let data = result?.data,
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let users = try? JSONDecoder().decode([UserAccount].self, from: jsonData)
-            else { return self.users = [] }
-            self.users = users
-            self.tableView.reloadData()
-        }
+// MARK: - Actions
+extension UsersListViewController {
+    @objc private func didPullToRefresh() {
+        refresh()
     }
 }
 
@@ -48,18 +46,8 @@ extension UsersListViewController: UITableViewDataSource {
         cell.userCreationLabel.text = user.creationDate
         cell.isVerifiedImageView.image = UIImage(systemName: user.isVerified ? "checkmark.seal" : "xmark.seal")
         cell.userImageView.image = ImageWithInitialsGenerator().generate(for: user.username)
-        switch UserRight(claims: user.claims ?? [:]) {
-        case .admin:
-            cell.userRightLabel.text = "Admin"
-            cell.userRightLabel.textColor = .systemPurple
-        case .restaurantOwner:
-            cell.userRightLabel.text = "Owner"
-            cell.userRightLabel.textColor = .systemGreen
-        case .rater:
-            cell.userRightLabel.text = "Rater"
-            cell.userRightLabel.textColor = .systemYellow
-        case .unknown: fatalError()
-        }
+        let userRight = UserRight(claims: user.claims ?? [:])
+        setup(cell: cell, for: userRight)
         return cell
     }
 }
@@ -120,5 +108,48 @@ extension UsersListViewController {
         )
         alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: { _ in }))
         present(alert, animated: true, completion: nil)
+    }
+
+    private func setupUI() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(
+            self,
+            action: #selector(didPullToRefresh),
+            for: .valueChanged
+        )
+        tableView.refreshControl = refreshControl
+    }
+
+    private func refresh() {
+        tableView.refreshControl?.beginRefreshing()
+        Functions.functions().httpsCallable("getAllUsers").call() { [weak self] result, error in
+            guard let self = self else { return }
+            self.tableView.refreshControl?.endRefreshing()
+            guard
+                let data = result?.data,
+                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
+                let users = try? JSONDecoder().decode([UserAccount].self, from: jsonData)
+            else { return self.users = [] }
+            self.users = users
+            self.tableView.reloadData()
+        }
+    }
+
+    private func setup(
+        cell: UserAccountCell,
+        for userRight: UserRight
+    ) {
+        switch userRight {
+        case .admin:
+            cell.userRightLabel.text = "Admin"
+            cell.userRightLabel.textColor = .systemPurple
+        case .restaurantOwner:
+            cell.userRightLabel.text = "Owner"
+            cell.userRightLabel.textColor = .systemGreen
+        case .rater:
+            cell.userRightLabel.text = "Rater"
+            cell.userRightLabel.textColor = .systemYellow
+        case .unknown: fatalError()
+        }
     }
 }
