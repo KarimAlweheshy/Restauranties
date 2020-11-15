@@ -93,7 +93,7 @@ extension RatingFormViewController: UIPickerViewDataSource {
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        row == 1 ? "1 star" : "\(row + 1) stars"
+        row == 0 ? "1 star" : "\(row + 1) stars"
     }
 }
 
