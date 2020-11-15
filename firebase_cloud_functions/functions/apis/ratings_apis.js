@@ -120,19 +120,28 @@ exports.replyToRating = functions.https.onCall(async (data, context) => {
 
     const db = admin.firestore()
 
+    if (!data.id) {
+        throw new functions.https.HttpsError('failed-precondition', 'Missing id argument');  
+    }
     const ratingDocRef = db.collection("ratings").doc(data.id)
     const ratingSnapshot = await ratingDocRef.get()
+    if (!ratingSnapshot.exists) {
+        throw new functions.https.HttpsError('failed-precondition', 'Cannot find rating with id ' + data.id);  
+    }
     const rating = ratingSnapshot.data()
 
-    const restaurantDocRef = db.collection("restaurant").doc(rating.restaurantID)
+    const restaurantDocRef = db.collection("restaurants").doc(rating.restaurantID)
     const restaurantSnapshot = await restaurantDocRef.get()
+    if (!restaurantSnapshot.exists) {
+        throw new functions.https.HttpsError('failed-precondition', 'Failed to find restaurant with id ' + rating.restaurantID);  
+    }
     const restaurant = restaurantSnapshot.data()
 
     if (restaurant.ownerID !== context.auth.uid) {
         throw new functions.https.HttpsError('failed-precondition', 'User does not own this restaurant');  
     }
 
-    if (!rating.reply) {
+    if (rating.reply) {
         throw new functions.https.HttpsError('failed-precondition', 'Already replied to this rating');  
     }
 
@@ -144,8 +153,8 @@ exports.replyToRating = functions.https.onCall(async (data, context) => {
         await db.runTransaction(async transaction => {
             const doc = await transaction.get(restaurantDocRef);
             const noReplyCount = doc.data().noReplyCount - 1;
-            transaction.update(ref, { noReplyCount: noReplyCount })
-            transaction.set(ratingDocRef, { reply: data.reply })
+            transaction.update(restaurantSnapshot.ref, { noReplyCount: noReplyCount })
+            transaction.update(ratingDocRef, { reply: data.reply })
        })
      } catch(error) {
         console.error(error)
