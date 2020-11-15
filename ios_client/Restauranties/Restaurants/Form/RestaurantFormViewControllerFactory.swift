@@ -10,17 +10,21 @@ import UIKit
 struct RestaurantFormViewControllerFactory {
     func makeNewRestaurant() -> RestaurantFormViewController {
         let storyboard = UIStoryboard(name: "RestaurantForm", bundle: nil)
+        let viewModel = NewRestaurantFormViewModel()
         let viewController = storyboard.instantiateInitialViewController { coder -> RestaurantFormViewController? in
-            RestaurantFormViewController(coder: coder, viewModel: NewRestaurantFormViewModel())
+            RestaurantFormViewController(coder: coder, viewModel: viewModel)
         }
+        viewModel.view = viewController
         return viewController!
     }
 
     func makeEditRestaurant(_ restaurant: Restaurant) -> RestaurantFormViewController {
         let storyboard = UIStoryboard(name: "RestaurantForm", bundle: nil)
+        let viewModel = EditRestaurantFormViewModel(restaurant: restaurant)
         let viewController = storyboard.instantiateInitialViewController { coder -> RestaurantFormViewController? in
-            RestaurantFormViewController(coder: coder, viewModel: EditRestaurantFormViewModel(restaurant: restaurant))
+            RestaurantFormViewController(coder: coder, viewModel: viewModel)
         }
+        viewModel.view = viewController
         return viewController!
     }
 }

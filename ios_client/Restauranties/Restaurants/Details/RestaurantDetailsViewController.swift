@@ -122,18 +122,18 @@ extension RestaurantDetailsViewController {
     }
 
     func makeDataSource() -> UITableViewDiffableDataSource<Int, RestaurantRatingCellViewModelWrapper> {
-            EditableRowDiffableDataSource(
-                tableView: tableView,
-                cellProvider: {  tableView, indexPath, wrapper in
-                    let cell = tableView.dequeueReusableCell(
-                        withIdentifier: "RestaurantRatingCell",
-                        for: indexPath
-                    ) as! RestaurantRatingCell
+        EditableRowDiffableDataSource(
+            tableView: tableView,
+            cellProvider: {  tableView, indexPath, wrapper in
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "RestaurantRatingCell",
+                    for: indexPath
+                ) as! RestaurantRatingCell
 
-                    wrapper.cellViewModel.configure(cell: cell)
+                wrapper.cellViewModel.configure(cell: cell)
 
-                    return cell
-                }
-            )
-        }
+                return cell
+            }
+        )
+    }
 }

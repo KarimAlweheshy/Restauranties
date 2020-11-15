@@ -67,14 +67,6 @@ extension RestaurantsListDefaultViewModel: RestaurantsListViewModel {
         self
     }
 
-    func numberOfRows() -> Int {
-        restaurants.count
-    }
-
-    func cellViewModel(for indexPath: IndexPath) -> RestaurantCellViewModel {
-        strategy.cellViewModel(for: restaurants[indexPath.row])
-    }
-
     func shouldShowAddRestaurant() -> Bool {
         strategy.shouldShowAddRestaurant()
     }
@@ -89,6 +81,17 @@ extension RestaurantsListDefaultViewModel: RestaurantsListViewModel {
 
     func viewModelForSelectedRestaurant(at indexPath: IndexPath) -> RestaurantDetailsViewModel {
         strategy.viewModel(for: restaurants[indexPath.row])
+    }
+
+    func restaurantsSnapshot() -> NSDiffableDataSourceSnapshot<Int, RestaurantCellViewModelWrapper> {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, RestaurantCellViewModelWrapper>()
+        snapshot.appendSections([0])
+        let wrappers = restaurants.compactMap { restaurant -> RestaurantCellViewModelWrapper in
+            let viewModel = RestaurantCellDefaultViewModel(restaurant: restaurant)
+            return RestaurantCellViewModelWrapper(cellViewModel: viewModel)
+        }
+        snapshot.appendItems(wrappers, toSection: 0)
+        return snapshot
     }
 }
 

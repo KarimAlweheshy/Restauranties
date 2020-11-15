@@ -14,7 +14,10 @@ struct RestaurantRatingCellViewModelWrapper: Hashable {
         hasher.combine(cellViewModel.hashValue)
     }
 
-    static func == (lhs: RestaurantRatingCellViewModelWrapper, rhs: RestaurantRatingCellViewModelWrapper) -> Bool {
+    static func == (
+        lhs: RestaurantRatingCellViewModelWrapper,
+        rhs: RestaurantRatingCellViewModelWrapper
+    ) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
 }

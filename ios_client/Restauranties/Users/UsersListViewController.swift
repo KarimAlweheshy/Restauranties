@@ -59,23 +59,16 @@ extension UsersListViewController: UITableViewDelegate {
         UISwipeActionsConfiguration(
             actions: [
                 UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
+                    defer { completion(true) }
                     let user = self.users[indexPath.row]
                     let right = user.claims.map(UserRight.init(claims:))
-                    guard right != .admin else { self.showCannotDeleteAdmin(); return completion(true) }
+                    guard right != .admin else { return self.showCannotDeleteAdmin() }
 
                     let message = right == .rater
                         ? "Deleting this user will result in deletion of all his ratings"
                         : "Deleting this user will result in deletion of all his restaurants and their ratings"
                     self.showDeleteUserAlert(message: message) {
-                        Functions.functions().httpsCallable("deleteUser").call(["uid": user.uid]) { [weak self] result, error in
-                            guard let self = self else { return }
-                            self.users.remove(at: indexPath.row)
-                            self.tableView.beginUpdates()
-                            self.tableView.deleteRows(at: [indexPath], with: .left)
-                            self.tableView.endUpdates()
-                        }
-                    } cancelAction: {
-                        completion(true)
+                        self.delete(user)
                     }
                 }
             ]
@@ -87,8 +80,7 @@ extension UsersListViewController: UITableViewDelegate {
 extension UsersListViewController {
     private func showDeleteUserAlert(
         message: String,
-        deleteAction: @escaping () -> Void,
-        cancelAction: @escaping () -> Void
+        deleteAction: @escaping () -> Void
     ) {
         let alert = UIAlertController(
             title: "Delete User",
@@ -96,8 +88,16 @@ extension UsersListViewController {
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in deleteAction() }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in cancelAction() }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+
+    private func delete(_ user: UserAccount) {
+        let callable = Functions.functions().httpsCallable("deleteUser")
+        callable.call(["uid": user.uid]) { [weak self] result, error in
+            guard let self = self else { return }
+            self.refresh()
+        }
     }
 
     private func showCannotDeleteAdmin() {

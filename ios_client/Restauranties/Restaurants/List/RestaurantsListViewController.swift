@@ -16,6 +16,7 @@ final class RestaurantsListViewController: UIViewController {
     private let viewModel: RestaurantsListViewModel
 
     @IBOutlet private var tableView: UITableView!
+    private lazy var dataSource = makeDataSource()
 
     init?(coder: NSCoder, viewModel: RestaurantsListViewModel) {
         self.viewModel = viewModel
@@ -47,7 +48,7 @@ final class RestaurantsListViewController: UIViewController {
 
 extension RestaurantsListViewController: RestaurantsListView {
     func reload() {
-        tableView.reloadData()
+        dataSource.apply(viewModel.restaurantsSnapshot())
     }
 
     func showLoading(_ isLoading: Bool) {
@@ -55,20 +56,6 @@ extension RestaurantsListViewController: RestaurantsListView {
         _ = isLoading
             ? refreshControl?.beginRefreshing()
             : refreshControl?.endRefreshing()
-    }
-}
-
-// MARK: - UITableViewDataSource
-
-extension RestaurantsListViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRows()
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantListCell", for: indexPath) as! RestaurantListCell
-        viewModel.cellViewModel(for: indexPath).configure(cell: cell)
-        return cell
     }
 }
 
@@ -112,6 +99,7 @@ extension RestaurantsListViewController {
 
 extension RestaurantsListViewController {
     private func setupUI() {
+        tableView.dataSource = dataSource
         var barButtonItems = navigationItem.rightBarButtonItems ?? []
         if viewModel.shouldShowAddRestaurant() {
             let barButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAddNewRestaurant))
@@ -130,5 +118,21 @@ extension RestaurantsListViewController {
             for: .valueChanged
         )
         tableView.refreshControl = refreshControl
+    }
+
+    func makeDataSource() -> UITableViewDiffableDataSource<Int, RestaurantCellViewModelWrapper> {
+        EditableRowDiffableDataSource(
+            tableView: tableView,
+            cellProvider: {  tableView, indexPath, wrapper in
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "RestaurantListCell",
+                    for: indexPath
+                ) as! RestaurantListCell
+
+                wrapper.cellViewModel.configure(cell: cell)
+
+                return cell
+            }
+        )
     }
 }

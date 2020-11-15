@@ -14,6 +14,7 @@ final class SceneSessionHandler {
     private let windowScene: UIWindowScene
     private let collectionReference: CollectionReference
     private var authListener: AuthStateDidChangeListenerHandle?
+    private var currentUser: User?
 
     init(
         windowScene: UIWindowScene,
@@ -39,16 +40,24 @@ extension SceneSessionHandler {
     }
 
     func startSession() {
-        guard Auth.auth().currentUser == nil else { return }
-        presentAuthViewController()
+        if let user = Auth.auth().currentUser {
+            setCorrectRoot(for: user, collectionReference: collectionReference)
+        } else {
+            presentAuthViewController()
+        }
     }
 }
 
 // MARK: - Private Methods
 
 extension SceneSessionHandler {
-    private func setCorrectRoot(for user: User?, collectionReference: CollectionReference) {
+    private func setCorrectRoot(
+        for user: User?,
+        collectionReference: CollectionReference
+    ) {
         if let user = user {
+            guard user != currentUser else { return }
+            self.currentUser = user
             presentMainViewController(for: user, collectionReference: collectionReference)
         } else {
             presentAuthViewController()

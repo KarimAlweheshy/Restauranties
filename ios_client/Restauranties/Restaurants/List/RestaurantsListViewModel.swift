@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol RestaurantsListViewModel {
     func title() -> String
@@ -13,12 +14,11 @@ protocol RestaurantsListViewModel {
     func shouldShowAddRestaurant() -> Bool
     func shouldShowFilterRestaurant() -> Bool
     func refresh()
-    func numberOfRows() -> Int
-
-    func cellViewModel(for indexPath: IndexPath) -> RestaurantCellViewModel
 
     func filtersDataSource() -> RestaurantsFilterDataSource
     func filtersDelegate() -> RestaurantsFilterDelegate?
 
     func viewModelForSelectedRestaurant(at: IndexPath) -> RestaurantDetailsViewModel
+
+    func restaurantsSnapshot() -> NSDiffableDataSourceSnapshot<Int, RestaurantCellViewModelWrapper>
 }
