@@ -19,6 +19,42 @@
         "queryScope": "COLLECTION",
         "fields": [
           {
+            "fieldPath": "noReplyCount",
+            "order": "ASCENDING"
+          },
+          {
+              "fieldPath": "ownerID",
+              "order": "ASCENDING"
+          },
+          {
+              "fieldPath": "creationDate",
+              "order": "ASCENDING"
+          }
+        ]
+      },
+      {
+        "collectionGroup": "restaurants",
+        "queryScope": "COLLECTION",
+        "fields": [
+          {
+              "fieldPath": "ownerID",
+              "order": "ASCENDING"
+          },
+          {
+            "fieldPath": "noReplyCount",
+            "order": "DESCENDING"
+          },
+          {
+              "fieldPath": "creationDate",
+              "order": "ASCENDING"
+          }
+        ]
+      },
+      {
+        "collectionGroup": "restaurants",
+        "queryScope": "COLLECTION",
+        "fields": [
+          {
               "fieldPath": "ownerID",
               "order": "ASCENDING"
           },

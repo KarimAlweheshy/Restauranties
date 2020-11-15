@@ -7,8 +7,9 @@ exports.myRestaurants = functions.https.onCall(async (data, context) => {
     userUtilities.verifyAuth(context)
     await userUtilities.verifyIsRestaurantOwnerUser(admin, context.auth.uid)
     const db = admin.firestore()
-    const restaurantsCollection = db.collection("restaurants").orderBy("creationDate")
-    const snapshot = await restaurantsCollection.where('ownerID', '==', context.auth.uid).get()
+    const restaurantsCollection = db.collection("restaurants")
+    const filteredRestaurantsCollection = applyPendingReplyFilterOnDocReferenceIfPossible(restaurantsCollection, data)
+    const snapshot = await filteredRestaurantsCollection.where('ownerID', '==', context.auth.uid).get()
     if (snapshot.empty) { return [] }
     return snapshot.docs.map(doc => {
       var data = restaurantUtilities.rewriteTimestampToISO(doc.data())
@@ -28,6 +29,7 @@ exports.allRestaurants = functions.https.onCall(async (data, context) => {
     return snapshot.docs.map(doc => {
       var data = restaurantUtilities.rewriteTimestampToISO(doc.data())
       data.id = doc.ref.id
+      delete data.noReplyCount
       return data
     })
 });
@@ -98,4 +100,19 @@ function applyRatingFilterOnDocReferenceIfPossible(docReference, data) {
       docReference = docReference.where('averageRating', '>', 0)
     }
     return docReference
+}
+
+function applyPendingReplyFilterOnDocReferenceIfPossible(docReference, data) {
+  if (!data || data.filterPendingReply === undefined) {
+    return docReference.orderBy("creationDate")
+  }
+  if (data.filterPendingReply !== true && data.filterPendingReply !== false) {
+    throw new functions.https.HttpsError('failed-precondition', 'Filter must be a boolean');  
+  }
+  if (data.filterPendingReply) {
+    docReference = docReference.where('noReplyCount', '!=', 0).orderBy('noReplyCount', 'desc')
+  } else {
+    docReference = docReference.where('noReplyCount', '==', 0)
+  }
+  return docReference.orderBy("creationDate")
 }
