@@ -107,17 +107,17 @@
                                 <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RestaurantRatingCell" id="jwm-2G-t8S" customClass="RestaurantRatingCell" customModule="Restauranties" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="120"/>
+                                        <rect key="frame" x="0.0" y="28" width="414" height="187"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jwm-2G-t8S" id="JxS-rl-8PC">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="187"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="huM-He-XPc">
-                                                    <rect key="frame" x="10" y="10" width="394" height="100"/>
+                                                    <rect key="frame" x="10" y="10" width="394" height="167"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="04P-8c-zef">
-                                                            <rect key="frame" x="10" y="10" width="374" height="80"/>
+                                                            <rect key="frame" x="10" y="10" width="374" height="147"/>
                                                             <subviews>
                                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Bz0-3h-ol6">
                                                                     <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
@@ -132,7 +132,7 @@
                                                                     </userDefinedRuntimeAttributes>
                                                                 </imageView>
                                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="4UP-Jm-Quj">
-                                                                    <rect key="frame" x="88" y="0.0" width="286" height="77.5"/>
+                                                                    <rect key="frame" x="88" y="0.0" width="286" height="147"/>
                                                                     <subviews>
                                                                         <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="23N-nk-7xY">
                                                                             <rect key="frame" x="0.0" y="0.0" width="286" height="20.5"/>
@@ -163,6 +163,28 @@
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Reply" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ca0-Yr-qiz">
+                                                                            <rect key="frame" x="0.0" y="85.5" width="286" height="20.5"/>
+                                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                            <nil key="textColor"/>
+                                                                            <nil key="highlightedColor"/>
+                                                                        </label>
+                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O71-1B-Ze3">
+                                                                            <rect key="frame" x="0.0" y="114" width="286" height="33"/>
+                                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                                            <state key="normal" title="Reply"/>
+                                                                            <userDefinedRuntimeAttributes>
+                                                                                <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
+                                                                                    <color key="value" systemColor="systemBlueColor"/>
+                                                                                </userDefinedRuntimeAttribute>
+                                                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                                                                    <integer key="value" value="1"/>
+                                                                                </userDefinedRuntimeAttribute>
+                                                                            </userDefinedRuntimeAttributes>
+                                                                            <connections>
+                                                                                <action selector="didTapReplyButton" destination="jwm-2G-t8S" eventType="touchUpInside" id="7i9-mN-0LG"/>
+                                                                            </connections>
+                                                                        </button>
                                                                     </subviews>
                                                                 </stackView>
                                                             </subviews>
@@ -195,6 +217,8 @@
                                             <outlet property="commentLabel" destination="vlf-Ne-g9X" id="DVA-3U-YHZ"/>
                                             <outlet property="dateOfVisitLabel" destination="aLm-y8-h7r" id="PCb-gd-ADs"/>
                                             <outlet property="ratingLabel" destination="Agh-Yv-OGM" id="OUf-5Y-VDz"/>
+                                            <outlet property="replyButton" destination="O71-1B-Ze3" id="w6z-b0-oPe"/>
+                                            <outlet property="replyLabel" destination="ca0-Yr-qiz" id="wtx-oH-E0R"/>
                                             <outlet property="userImageView" destination="Bz0-3h-ol6" id="cBc-Io-HS5"/>
                                             <outlet property="usernameLabel" destination="sbF-OM-RBT" id="yfO-HS-E5u"/>
                                         </connections>
@@ -243,6 +267,9 @@
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

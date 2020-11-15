@@ -1,5 +1,5 @@
 //
-//  RestaurantDetailsRaterViewModel.swift
+//  RestaurantDetailsDefaultViewModel.swift
 //  Restauranties
 //
 //  Created by Karim Alweheshy on 11/10/20.
@@ -8,7 +8,7 @@
 import Foundation
 import Firebase
 
-final class RestaurantDetailsRaterViewModel {
+final class RestaurantDetailsDefaultViewModel {
     weak var view: RestaurantDetailsView?
     private let userRight: UserRight
     private var restaurant: Restaurant
@@ -22,7 +22,7 @@ final class RestaurantDetailsRaterViewModel {
 
 // MARK: - RestaurantDetailsViewModel
 
-extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
+extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
     func viewDidLoad() {
         refresh()
     }
@@ -60,6 +60,15 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
         userRight == .rater
     }
 
+    func didAddReplyForRating(reply: String, at indexPath: IndexPath) {
+        let callable = Functions.functions().httpsCallable("replyToRating")
+        let rating = ratings[indexPath.row]
+        callable.call(["id": rating.id, "reply": reply]) { [weak self] result, error in
+            guard let self = self, error == nil else { return }
+            self.refresh()
+        }
+    }
+
     func didTapDeleteRating(at indexPath: IndexPath) {
         let callable = Functions.functions().httpsCallable("deleteRating")
         let rating = ratings[indexPath.row]
@@ -78,7 +87,7 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
         var snapshot = NSDiffableDataSourceSnapshot<Int, RestaurantRatingCellViewModelWrapper>()
         snapshot.appendSections([0])
         let wrappers = ratings.compactMap { rating -> RestaurantRatingCellViewModelWrapper in
-            let viewModel = RestaurantRatingCellRaterViewModel(rating: rating)
+            let viewModel: RestaurantRatingCellViewModel = self.userRight == .restaurantOwner ? RestaurantRatingCellOwnerViewModel(rating: rating) : RestaurantRatingCellRaterViewModel(rating: rating)
             return RestaurantRatingCellViewModelWrapper(cellViewModel: viewModel)
         }
         snapshot.appendItems(wrappers, toSection: 0)
@@ -88,7 +97,7 @@ extension RestaurantDetailsRaterViewModel: RestaurantDetailsViewModel {
 
 // MARK: - RatingFormViewModelDelegate
 
-extension RestaurantDetailsRaterViewModel: RatingFormRatingViewModelDelegate {
+extension RestaurantDetailsDefaultViewModel: RatingFormRatingViewModelDelegate {
     func didFinish() {
         refresh()
         view?.popRateFormViewController()
@@ -97,7 +106,7 @@ extension RestaurantDetailsRaterViewModel: RatingFormRatingViewModelDelegate {
 
 // MARK: - Private Methods
 
-extension RestaurantDetailsRaterViewModel {
+extension RestaurantDetailsDefaultViewModel {
     private func refreshRatings() {
         view?.showLoading(true)
         let callable = Functions.functions().httpsCallable("restaurantRatings")

@@ -15,4 +15,5 @@ struct Rating: Codable, Equatable, Hashable {
     let photoURL: URL?
     let visitDate: Date
     let creationDate: Date
+    let reply: String?
 }

@@ -96,6 +96,38 @@ extension RestaurantDetailsViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - RestaurantRatingCellDelegate
+
+extension RestaurantDetailsViewController: RestaurantRatingCellDelegate {
+    func didTapReplyButton(for cell: RestaurantRatingCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+
+        let alertController = UIAlertController(
+            title: "Add Reply",
+            message: "Reply to rating",
+            preferredStyle: .alert
+        )
+        alertController.addTextField { textField in
+            textField.placeholder = "Reply"
+        }
+        let confirmAction = UIAlertAction(
+            title: "OK",
+            style: .default
+        ) { _ in
+            guard
+                let textField = alertController.textFields?.first,
+                let reply = textField.text,
+                !reply.isEmpty
+            else { return }
+            self.viewModel.didAddReplyForRating(reply: reply, at: indexPath)
+        }
+        alertController.addAction(confirmAction)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+}
+
 // MARK: - Private Methods
 
 extension RestaurantDetailsViewController {
@@ -121,7 +153,7 @@ extension RestaurantDetailsViewController {
         restaurantTotalRatingsLabel.text = viewModel.restaurantTotalRatingsString()
     }
 
-    func makeDataSource() -> UITableViewDiffableDataSource<Int, RestaurantRatingCellViewModelWrapper> {
+    private func makeDataSource() -> UITableViewDiffableDataSource<Int, RestaurantRatingCellViewModelWrapper> {
         EditableRowDiffableDataSource(
             tableView: tableView,
             cellProvider: {  tableView, indexPath, wrapper in
@@ -130,6 +162,7 @@ extension RestaurantDetailsViewController {
                     for: indexPath
                 ) as! RestaurantRatingCell
 
+                cell.delegate = self
                 wrapper.cellViewModel.configure(cell: cell)
 
                 return cell

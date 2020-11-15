@@ -41,7 +41,7 @@ extension RestaurantsListViewModelAdminStratey: RestaurantsListViewModelStratey 
     }
 
     func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel {
-        RestaurantDetailsRaterViewModel(
+        RestaurantDetailsDefaultViewModel(
             restaurant: selectedRestaurant,
             userRight: .admin
         )

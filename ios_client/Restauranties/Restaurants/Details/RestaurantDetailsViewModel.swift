@@ -14,6 +14,7 @@ protocol RestaurantDetailsViewModel: AnyObject {
     func viewDidLoad()
     func refresh()
 
+    func didAddReplyForRating(reply: String, at: IndexPath)
     func didTapDeleteRating(at indexPath: IndexPath)
     func canDeleteRatings() -> Bool
     func canShowRateButton() -> Bool
