@@ -109,6 +109,7 @@ extension RestaurantDetailsViewController: RestaurantRatingCellDelegate {
         )
         alertController.addTextField { textField in
             textField.placeholder = "Reply"
+            textField.autocapitalizationType = .sentences
         }
         let confirmAction = UIAlertAction(
             title: "OK",
