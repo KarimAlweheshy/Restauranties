@@ -16,8 +16,8 @@ extension RestaurantsListViewModelAdminStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func httpsCallableData() -> [String : Any] {
-        [String: Any]()
+    func httpsCallableData() -> [String : Any]? {
+        nil
     }
 
     func httpsCallablePath() -> String {

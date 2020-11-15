@@ -27,5 +27,13 @@ extension RestaurantCellDefaultViewModel: RestaurantCellViewModel {
             cell.averageRatingsLabel.isHidden = true
         }
         cell.restaurantImageView.image = ImageWithInitialsGenerator().generate(for: restaurant.name)
+        cell.noReplyCountLabel.isHidden = restaurant.noReplyCount == nil
+        if let noReplyCount = restaurant.noReplyCount {
+            if noReplyCount == 0 {
+                cell.noReplyCountLabel.text = "You have replied to all ratings"
+            } else {
+                cell.noReplyCountLabel.text = "You have not replied to \(restaurant.noReplyCount ?? 0) rating(s)"
+            }
+        }
     }
 }

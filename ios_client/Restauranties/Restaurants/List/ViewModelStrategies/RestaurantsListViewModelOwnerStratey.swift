@@ -7,7 +7,9 @@
 
 import Foundation
 
-final class RestaurantsListViewModelOwnerStratey {}
+final class RestaurantsListViewModelOwnerStratey {
+    private var selectedFilter: String? = nil
+}
 
 // MARK: - RestaurantsListViewModelStratey
 
@@ -16,8 +18,14 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func httpsCallableData() -> [String : Any] {
-        [String: Any]()
+    func httpsCallableData() -> [String : Any]? {
+        guard
+            let selectedFilter = selectedFilter,
+            let index = filters().firstIndex(of: selectedFilter)
+        else {
+            return nil
+        }
+        return ["filterPendingReply": index == 0 ? true : false]
     }
 
     func httpsCallablePath() -> String {
@@ -29,7 +37,7 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
     }
 
     func shouldShowFilterRestaurant() -> Bool {
-        false
+        true
     }
 
     func tabBarSystemImageName() -> String {
@@ -52,11 +60,12 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
 
 extension RestaurantsListViewModelOwnerStratey {
     func filters() -> [String] {
-        fatalError()
+        ["Replies Missing", "Replied To All"]
     }
 
     func selectedFilterIndex() -> Int? {
-        fatalError()
+        guard let selectedFilter = selectedFilter else { return nil }
+        return filters().firstIndex(of: selectedFilter)
     }
 }
 
@@ -64,7 +73,8 @@ extension RestaurantsListViewModelOwnerStratey {
 
 extension RestaurantsListViewModelOwnerStratey {
     func didSelectFilter(at row: Int?) {
-        fatalError()
+        guard let row = row else { return selectedFilter = nil }
+        selectedFilter = filters()[row]
     }
 }
 

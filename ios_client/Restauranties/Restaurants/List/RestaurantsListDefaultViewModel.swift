@@ -16,7 +16,7 @@ protocol RestaurantsListViewModelStratey: RestaurantsFilterDataSource, Restauran
     func tabBarSystemImageName() -> String
     func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel
     func httpsCallablePath() -> String
-    func httpsCallableData() -> [String: Any]
+    func httpsCallableData() -> [String: Any]?
 }
 
 final class RestaurantsListDefaultViewModel {

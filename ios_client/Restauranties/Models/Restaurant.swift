@@ -18,4 +18,5 @@ struct Restaurant: Codable, Hashable {
     let averageRating: Double
     let creationDate: Date
     let modificationDate: Date
+    let noReplyCount: Int?
 }

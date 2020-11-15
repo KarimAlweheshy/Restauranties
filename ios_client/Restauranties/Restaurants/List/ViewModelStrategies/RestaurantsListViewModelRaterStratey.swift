@@ -18,12 +18,9 @@ extension RestaurantsListViewModelRaterStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func httpsCallableData() -> [String : Any] {
-        var data = [String: Any]()
-        if let selectedFilter = selectedFilter {
-            data = ["filter": selectedFilter]
-        }
-        return data
+    func httpsCallableData() -> [String : Any]? {
+        guard let selectedFilter = selectedFilter else { return nil }
+        return ["filter": selectedFilter]
     }
 
     func httpsCallablePath() -> String {
