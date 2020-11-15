@@ -41,24 +41,6 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
         // Rater: delete all restaurant ratings
         batch = await deleteAllRaterDocument(userID, db, batch)
 
-        const ratingsQuery = db.collection("ratings").where('ownerID', '==', userID)
-        const ratingsQuerySnapshots = await ratingsQuery.get()
-        const ratings = ratingsQuerySnapshots.docs.map(doc => doc.data())
-        const affectedRestaurantIDs = Array.from(new Set(ratings.map(rating => rating.restaurantID)))
-        ratingsQuerySnapshots.forEach(doc => batch.delete(doc.ref))
-
-        for (i = 0; i < affectedRestaurantIDs.length; i++) { 
-            const restaurantID = affectedRestaurantIDs[i]
-            const restaurantRef = db.collection("restaurants").doc(restaurantID)
-            const remainingRatingsQuery = db.collection("ratings").where("restaurantID", "==", restaurantID)
-            const newRatingsQuerySpanshot = await remainingRatingsQuery.get()
-            var newRatings = newRatingsQuerySpanshot.docs.map(doc => doc.data())
-            newRatings = newRatings.filter(rating => !ratings.includes(rating))
-            const ratingsCount = newRatings.length
-            const totalStars = newRatings.reduce((accumulator, currentValue) => accumulator + currentValue.stars ,0)
-            batch.update(restaurantRef, {totalRatings: ratingsCount, averageRating: totalStars / ratingsCount })
-        }
-
         // Owner: delete all restaurants and restaurant ratings
         batch = await deleteAllRestaurantOwnerDocument(userID, db, batch)
         
