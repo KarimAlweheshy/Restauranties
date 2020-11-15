@@ -69,6 +69,7 @@ exports.addRestaurant = functions.https.onCall(async (data, context) => {
       ownerID: context.auth.uid,
       totalRatings: 0,
       averageRating: 0,
+      noReplyCount: 0,
       creationDate: admin.firestore.Timestamp.fromDate(new Date()),
       modificationDate: admin.firestore.Timestamp.fromDate(new Date()),
     }

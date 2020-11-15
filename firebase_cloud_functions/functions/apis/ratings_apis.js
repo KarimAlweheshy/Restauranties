@@ -44,9 +44,6 @@ exports.addRating = functions.https.onCall(async (data, context) => {
 
     ratingUtilities.verifyRatingKeysAndValues(data)
     const documentSnapshot = await restaurantDocumentSnapshot(data.restaurantID)
-    const restaurant = documentSnapshot.data()
-    const newTotalRatings = restaurant.totalRatings + 1
-    const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) + data.stars) / newTotalRatings
     
     const visitDate = new admin.firestore.Timestamp(parseInt(data.visitDate), 0)
     
@@ -65,18 +62,24 @@ exports.addRating = functions.https.onCall(async (data, context) => {
     }
 
     const db = admin.firestore()
-    const batch = db.batch()
-
-    const newRatingDocRef = db.collection("ratings").doc()
-    batch.create(newRatingDocRef, rating)
-    batch.update(documentSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating })
     
     try {
-        await batch.commit()
+        const newRatingDocRef = db.collection("ratings").doc()
+        await db.runTransaction(async transaction => {
+            const restaurantDocSnapshot = await transaction.get(db.collection("restaurants").doc(data.restaurantID));
+            const restaurant = restaurantDocSnapshot.data()
+            const newTotalRatings = restaurant.totalRatings + 1
+            const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) + data.stars) / newTotalRatings
+            const newTotalNoReply = restaurant.noReplyCount + 1
+    
+            transaction.update(restaurantDocSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating, noReplyCount: newTotalNoReply })
+            transaction.create(newRatingDocRef, rating)
+       })
 
         const newRating = await newRatingDocRef.get()
         return { id: newRating.id, ...newRating.data() }
     } catch (error) {
+        console.error(error)
         throw new functions.https.HttpsError('failed-precondition', 'Error adding the new rating');  
     }
 });
@@ -91,28 +94,70 @@ exports.deleteRating = functions.https.onCall(async (data, context) => {
     const ratingSnapshot = await ratingDocRef.get()
     const rating = ratingSnapshot.data()
 
-    const restaurantSnapshot = await restaurantDocumentSnapshot(rating.restaurantID)
-    const restaurant = restaurantSnapshot.data()
-    const newTotalRatings = restaurant.totalRatings - 1
-    const newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) - rating.stars) / newTotalRatings
+    try{
+        await db.runTransaction(async transaction => {
+            const restaurantDocSnapshot = await transaction.get(db.collection("restaurants").doc(rating.restaurantID));
+            const restaurant = restaurantDocSnapshot.data()
+            const newTotalRatings = restaurant.totalRatings - 1
+            const newTotalNoReply = restaurant.noReplyCount - 1
+            var newAverageRating = 0
+            if (!newTotalRatings) {
+                newAverageRating = ((restaurant.averageRating * restaurant.totalRatings) - rating.stars) / newTotalRatings
+            }
 
-    const batch = db.batch()
-
-    batch.delete(ratingDocRef)
-    batch.update(restaurantSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating })
-
-    try {
-        return await batch.commit()
-    } catch (error) {
+            transaction.update(restaurantDocSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating, noReplyCount: newTotalNoReply })
+            transaction.delete(ratingDocRef)
+       })
+     } catch(error) {
+        console.error(error)
         throw new functions.https.HttpsError('failed-precondition', 'Error happened deleting the rating');  
+     }
+});
+
+exports.replyToRating = functions.https.onCall(async (data, context) => {
+    userUtilities.verifyAuth(context)
+    userUtilities.verifyIsRestaurantOwnerUser(admin, context.auth.uid)
+
+    const db = admin.firestore()
+
+    const ratingDocRef = db.collection("ratings").doc(data.id)
+    const ratingSnapshot = await ratingDocRef.get()
+    const rating = ratingSnapshot.data()
+
+    const restaurantDocRef = db.collection("restaurant").doc(rating.restaurantID)
+    const restaurantSnapshot = await restaurantDocRef.get()
+    const restaurant = restaurantSnapshot.data()
+
+    if (restaurant.ownerID !== context.auth.uid) {
+        throw new functions.https.HttpsError('failed-precondition', 'User does not own this restaurant');  
     }
+
+    if (!rating.reply) {
+        throw new functions.https.HttpsError('failed-precondition', 'Already replied to this rating');  
+    }
+
+    if (!data.reply || !data.reply.length) {
+        throw new functions.https.HttpsError('failed-precondition', 'Missing reply body param');  
+    }
+
+    try{
+        await db.runTransaction(async transaction => {
+            const doc = await transaction.get(restaurantDocRef);
+            const noReplyCount = doc.data().noReplyCount - 1;
+            transaction.update(ref, { noReplyCount: noReplyCount })
+            transaction.set(ratingDocRef, { reply: data.reply })
+       })
+     } catch(error) {
+        console.error(error)
+        throw new functions.https.HttpsError('failed-precondition', 'Error happened updating the rating');  
+     }
 });
 
 async function restaurantDocumentSnapshot(restaurantID) {
     const db = admin.firestore()
     const restaurantSnapshot = await db.collection("restaurants").doc(restaurantID).get()
     
-    if (restaurantSnapshot.empty) {
+    if (!restaurantSnapshot.exists) {
         throw new functions.https.HttpsError('failed-precondition', 'Restaurant does not exist');
     }
 
