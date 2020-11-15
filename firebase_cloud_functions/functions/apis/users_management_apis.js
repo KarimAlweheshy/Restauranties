@@ -40,7 +40,7 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
     try {
         // Rater: delete all restaurant ratings
         batch = await deleteAllRaterDocument(userID, db, batch)
-        
+
         // Owner: delete all restaurants and restaurant ratings
         batch = await deleteAllRestaurantOwnerDocument(userID, db, batch)
         
@@ -52,7 +52,7 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
 });
 
 async function deleteAllRestaurantOwnerDocument(userID, db, batch) {
-    const restaurantsQuery = db.collection("restaurant").where('ownerID', '==', userID)
+    const restaurantsQuery = db.collection("restaurants").where('ownerID', '==', userID)
     const restaurantsSnapshots = await restaurantsQuery.get()
     
     var restaurantIDs = new Array()
