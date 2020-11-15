@@ -28,32 +28,31 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('failed-precondition', 'Missing uid in body');
     }
 
-    if (userUtilities.isAdminUser(await findUser(admin, data.uid))) {
+    const userID = data.uid
+    const user = await userUtilities.findUser(admin, userID)
+    if (userUtilities.isAdminUser(user)) {
         throw new functions.https.HttpsError('failed-precondition', 'Cannot delete admin a user from API');
     }
 
-    const user = userUtilities.findUser(admin, context.auth.uid)
     const db = admin.firestore()
-    const batch = db.batch()
-
-    if (userUtilities.isRestaurantOwnerUser(user)) {
-        // Owner: delete all restaurants and restaurant ratings
-        deleteAllRestaurantOwnerDocument(user, db, batch)
-    } else {
-        // Rater: delete all restaurant ratings
-        deleteAllRaterOwnerDocument(user, db, batch)
-    }
+    var batch = db.batch()
 
     try {
+        // Rater: delete all restaurant ratings
+        batch = await deleteAllRaterDocument(userID, db, batch)
+        
+        // Owner: delete all restaurants and restaurant ratings
+        batch = await deleteAllRestaurantOwnerDocument(userID, db, batch)
+        
         await batch.commit()
-        return await admin.auth().deleteUser(data.uid) 
+        return await admin.auth().deleteUser(userID) 
     } catch (error) {
         throw new functions.https.HttpsError('failed-precondition', 'Error happened deleting the user');  
     }
 });
 
-async function deleteAllRestaurantOwnerDocument(user, db, batch) {
-    const restaurantsQuery = db.collection("restaurant").where('ownerID', '==', user.uid)
+async function deleteAllRestaurantOwnerDocument(userID, db, batch) {
+    const restaurantsQuery = db.collection("restaurant").where('ownerID', '==', userID)
     const restaurantsSnapshots = await restaurantsQuery.get()
     
     var restaurantIDs = new Array()
@@ -62,13 +61,33 @@ async function deleteAllRestaurantOwnerDocument(user, db, batch) {
         batch.delete(doc.ref) 
     })
 
+    if (!restaurantIDs.length) { return batch }
+
     const ratingsQuery = db.collection("ratings").where('restaurantID', 'in', restaurantIDs)
     const ratingsSnapshots = await ratingsQuery.get()
     ratingsSnapshots.forEach(doc => batch.delete(doc.ref))
+
+    return batch
 }
 
-async function deleteAllRaterOwnerDocument(user, db, batch) {
-    const ratingsQuery = db.collection("ratings").where('ownerID', '==', user.uid)
-    const ratingsSnapshots = await ratingsQuery.get()
-    ratingsSnapshots.forEach(doc => batch.delete(doc.ref))
+async function deleteAllRaterDocument(userID, db, batch) {
+    const ratingsQuery = db.collection("ratings").where('ownerID', '==', userID)
+    const ratingsQuerySnapshots = await ratingsQuery.get()
+    const ratings = ratingsQuerySnapshots.docs.map(doc => doc.data())
+    const affectedRestaurantsID = new Set(ratings.map(rating => rating.restaurantID))
+    ratingsQuerySnapshots.forEach(doc => batch.delete(doc.ref))
+
+    for (i = 0; i < affectedRestaurantsID.length; i++) { 
+        const restaurantID = affectedRestaurantsID[i]
+        const restaurantRef = db.collection("restaurants").doc(restaurantID)
+        const remainingRatingsQuery = db.collection("ratings").where("restaurantID", "==", restaurantID)
+        const newRatingsQuerySpanshot = await remainingRatingsQuery.get()
+        var newRatings = newRatingsQuerySpanshot.docs.map(doc => doc.data())
+        newRatings = newRatings.filter(rating => !ratings.includes(rating))
+        const ratingsCount = newRatings.length
+        const totalStars = newRatings.reduce((accumulator, currentValue) => accumulator + currentValue.stars ,0)
+        batch.update(restaurantRef, {totalRatings: ratingsCount, averageRating: totalStars / ratingsCount })
+    }
+
+    return batch
 }
