@@ -8,7 +8,7 @@ target 'Restauranties' do
   # Pods for Restauranties
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
-  pod 'FirebaseUI', '~> 8.0' 
+  pod 'FirebaseUI'
   pod 'Firebase/Firestore'
   pod 'FirebaseFirestoreSwift'
   pod 'Firebase/Functions'

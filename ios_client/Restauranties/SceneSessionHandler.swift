@@ -12,16 +12,11 @@ final class SceneSessionHandler {
     var window: UIWindow?
     
     private let windowScene: UIWindowScene
-    private let collectionReference: CollectionReference
     private var authListener: AuthStateDidChangeListenerHandle?
     private var currentUser: User?
 
-    init(
-        windowScene: UIWindowScene,
-        collectionReference: CollectionReference
-    ) {
+    init(windowScene: UIWindowScene) {
         self.windowScene = windowScene
-        self.collectionReference = collectionReference
     }
 
     deinit {
@@ -35,13 +30,13 @@ final class SceneSessionHandler {
 extension SceneSessionHandler {
     func listenToSessionChanges() {
         authListener = Auth.auth().addStateDidChangeListener { [unowned self] (auth, user) in
-            self.setCorrectRoot(for: user, collectionReference: self.collectionReference)
+            self.setCorrectRoot(for: user)
         }
     }
 
     func startSession() {
         if let user = Auth.auth().currentUser {
-            setCorrectRoot(for: user, collectionReference: collectionReference)
+            setCorrectRoot(for: user)
         } else {
             presentAuthViewController()
         }
@@ -51,21 +46,18 @@ extension SceneSessionHandler {
 // MARK: - Private Methods
 
 extension SceneSessionHandler {
-    private func setCorrectRoot(
-        for user: User?,
-        collectionReference: CollectionReference
-    ) {
+    private func setCorrectRoot(for user: User?) {
         if let user = user {
             guard user != currentUser else { return }
             self.currentUser = user
-            presentMainViewController(for: user, collectionReference: collectionReference)
+            presentMainViewController(for: user)
         } else {
             presentAuthViewController()
         }
     }
 
-    private func presentMainViewController(for user: User, collectionReference: CollectionReference) {
-        let viewController = HomeViewController.make(user: user, collectionReference: collectionReference)
+    private func presentMainViewController(for user: User) {
+        let viewController = HomeViewController.make(user: user)
         present(rootViewController: viewController)
     }
 

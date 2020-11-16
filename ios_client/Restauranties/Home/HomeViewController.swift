@@ -14,12 +14,10 @@ protocol HomeViewControllerDelegate: AnyObject {
 
 final class HomeViewController: UITabBarController {
     private let user: User
-    private let collectionReference: CollectionReference
     private var userRight: UserRight?
 
-    init(user: User, collectionReference: CollectionReference) {
+    init(user: User) {
         self.user = user
-        self.collectionReference = collectionReference
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -81,7 +79,7 @@ extension HomeViewController: HomeViewControllerDelegate {
 // MARK: - Factory Methods
 
 extension HomeViewController {
-    static func make(user: User, collectionReference: CollectionReference) -> HomeViewController {
-        HomeViewController(user: user, collectionReference: collectionReference)
+    static func make(user: User) -> HomeViewController {
+        HomeViewController(user: user)
     }
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import FirebaseAuth
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow? {
@@ -22,12 +23,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         FirebaseApp.configure()
-        let database = Firestore.firestore().collection("restaurants")
 
-        let sessionHandler = SceneSessionHandler(
-            windowScene: windowScene,
-            collectionReference: database
-        )
+        let sessionHandler = SceneSessionHandler(windowScene: windowScene)
         sessionHandler.startSession()
         sessionHandler.listenToSessionChanges()
         self.sessionHandler = sessionHandler
