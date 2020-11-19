@@ -1,3 +1,11 @@
 {
-  "name": "firebase_cloud_functions"
+  "name": "firebase_cloud_functions",
+  "dependencies": {
+    "typescript": "^4.0.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.13.0"
+  }
 }

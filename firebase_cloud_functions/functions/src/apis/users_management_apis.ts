@@ -1,10 +1,10 @@
-const functions = require("firebase-functions")
-const admin = require("firebase-admin")
-const userUtilities = require("./../utilities/user_utilities")
+import * as functions from 'firebase-functions'
+import * as admin from 'firebase-admin'
+import * as UserUtilities from '../utilities/user_utilities'
 
-exports.getAllUsers = functions.https.onCall(async (_data, context) => {
-    userUtilities.verifyAuth(context)
-    await userUtilities.verifyIsAdminUser(admin, context.auth.uid)
+export const getAllUsers = functions.https.onCall(async (_data, context) => {
+    UserUtilities.verifyAuth(context)
+    await UserUtilities.verifyIsAdminUser(admin.auth(), context.auth!.uid)
 
     const result = await admin.auth().listUsers();
     return result.users.map(user => {
@@ -20,22 +20,22 @@ exports.getAllUsers = functions.https.onCall(async (_data, context) => {
     });
 });
 
-exports.deleteUser = functions.https.onCall(async (data, context) => {
-    userUtilities.verifyAuth(context)
-    await userUtilities.verifyIsAdminUser(admin, context.auth.uid)
+export const deleteUser = functions.https.onCall(async (data, context) => {
+    UserUtilities.verifyAuth(context)
+    await UserUtilities.verifyIsAdminUser(admin.auth(), context.auth!.uid)
 
     if (!data.uid) {
         throw new functions.https.HttpsError('failed-precondition', 'Missing uid in body');
     }
 
     const userID = data.uid
-    const user = await userUtilities.findUser(admin, userID)
-    if (userUtilities.isAdminUser(user)) {
+    const user = await UserUtilities.findUser(admin.auth(), userID)
+    if (UserUtilities.isAdminUser(user)) {
         throw new functions.https.HttpsError('failed-precondition', 'Cannot delete admin a user from API');
     }
 
     const db = admin.firestore()
-    var batch = db.batch()
+    let batch = db.batch()
 
     try {
         // Rater: delete all restaurant ratings
@@ -51,11 +51,11 @@ exports.deleteUser = functions.https.onCall(async (data, context) => {
     }
 });
 
-async function deleteAllRestaurantOwnerDocument(userID, db, batch) {
+async function deleteAllRestaurantOwnerDocument(userID: string, db: FirebaseFirestore.Firestore, batch: FirebaseFirestore.WriteBatch) {
     const restaurantsQuery = db.collection("restaurants").where('ownerID', '==', userID)
     const restaurantsSnapshots = await restaurantsQuery.get()
     
-    var restaurantIDs = new Array()
+    const restaurantIDs = new Array()
     restaurantsSnapshots.forEach(doc => { 
         restaurantIDs.push(doc.id)
         batch.delete(doc.ref) 
@@ -70,19 +70,18 @@ async function deleteAllRestaurantOwnerDocument(userID, db, batch) {
     return batch
 }
 
-async function deleteAllRaterDocument(userID, db, batch) {
+async function deleteAllRaterDocument(userID: string, db: FirebaseFirestore.Firestore, batch: FirebaseFirestore.WriteBatch) {
     const ratingsQuery = db.collection("ratings").where('ownerID', '==', userID)
     const ratingsQuerySnapshots = await ratingsQuery.get()
     const ratings = ratingsQuerySnapshots.docs.map(doc => doc.data())
     const affectedRestaurantIDs = Array.from(new Set(ratings.map(rating => rating.restaurantID)))
     ratingsQuerySnapshots.forEach(doc => batch.delete(doc.ref))
 
-    for (i = 0; i < affectedRestaurantIDs.length; i++) { 
-        const restaurantID = affectedRestaurantIDs[i]
+    for (const restaurantID of affectedRestaurantIDs) { 
         const restaurantRef = db.collection("restaurants").doc(restaurantID)
         const remainingRatingsQuery = db.collection("ratings").where("restaurantID", "==", restaurantID)
         const newRatingsQuerySpanshot = await remainingRatingsQuery.get()
-        var newRatings = newRatingsQuerySpanshot.docs.map(doc => doc.data())
+        let newRatings = newRatingsQuerySpanshot.docs.map(doc => doc.data())
         newRatings = newRatings.filter(rating => !ratings.includes(rating))
         
         const ratingsCount = newRatings.length
