@@ -1,0 +1,89 @@
+service: alf-restaurantiesapi
+
+package:
+  artifact: .build/lambda/api_restauranties/lambda.zip
+
+custom:
+      restaurantsTableName: restaurants-${self:provider.stage}
+
+provider:
+  name: aws
+  runtime: provided
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-west-2'}
+  environment:
+    RESTAURANTS_TABLE_NAME: "${self:custom.restaurantsTableName}"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:DescribeTable
+      Resource:
+        - { Fn::GetAtt: [RestaurantsTable, Arn] }
+
+functions:
+  createRestaurant:
+    handler: create
+    memorySize: 256
+    events:
+      - http:
+          path: /restaurants
+          method: post
+          cors: true
+  readRestaurant:
+    handler: read
+    memorySize: 256
+    events:
+      - http:
+          path: /restaurants/{id}
+          method: get
+          cors: true
+  updateRestaurant:
+    handler: update
+    memorySize: 256
+    events:
+      - http:
+          path: /restaurants/{id}
+          method: put
+          cors: true
+  deleteRestaurant:
+    handler: delete
+    memorySize: 256
+    events:
+      - http:
+          path: /restaurants/{id}
+          method: delete
+          cors: true
+  listRestaurants:
+    handler: list
+    memorySize: 256
+    events:
+      - http:
+          path: /restaurants
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    RestaurantsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.restaurantsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
