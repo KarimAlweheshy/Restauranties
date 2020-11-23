@@ -9,7 +9,9 @@ import { ServiceFactory } from '../factories/service_factory'
 import * as module from './module'
 
 export class RatingsAPISModule implements module.Module {
-    factory: ServiceFactory
+    pathPrefix = "ratings"
+
+    private factory: ServiceFactory
 
     constructor(factory: ServiceFactory) {
         this.factory = factory
@@ -17,32 +19,13 @@ export class RatingsAPISModule implements module.Module {
 
     appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
         const app = this.factory.makeNewService()
-        app.get(
-            '/', 
-            authenticationMiddleware.authenticate, 
-            this.getRestaurantRatings
-        )
 
-        app.post(
-            '/', 
-            authenticationMiddleware.authenticate,
-            authenticationMiddleware.authenticateRater, 
-            this.addRating
-        )
-
-        app.delete(
-            '/:ratingID', 
-            authenticationMiddleware.authenticate,
-            authenticationMiddleware.authenticateAdmin, 
-            this.deleteRating
-        )
-
-        app.post(
-            '/:ratingID/reply', 
-            authenticationMiddleware.authenticate,
-            authenticationMiddleware.authenticateOwner, 
-            this.replyToRating
-        )
+        app.all('/', authenticationMiddleware.authenticate)
+        
+        app.get('/',  this.getRestaurantRatings)
+        app.post('/', authenticationMiddleware.authenticateRater, this.addRating)
+        app.delete('/:ratingID', authenticationMiddleware.authenticateAdmin, this.deleteRating)
+        app.post('/:ratingID/reply', authenticationMiddleware.authenticateOwner, this.replyToRating)
 
         return app
     }
@@ -65,7 +48,7 @@ export class RatingsAPISModule implements module.Module {
         const ratingsCollection = db.collection("ratings").orderBy("visitDate", 'desc')
         const snapshot = await ratingsCollection.where('restaurantID', '==', restaurantID).get()
         if (!snapshot.docs) { 
-            res.status(200).send('[]') 
+            res.status(204).send() 
             return
         }
     
@@ -164,6 +147,7 @@ export class RatingsAPISModule implements module.Module {
                 transaction.update(restaurantDocSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating, noReplyCount: newTotalNoReply })
                 transaction.delete(ratingDocRef)
             })
+            res.status(200).send()
         } catch(error) {
             res.status(400).send('Error happened deleting the rating')
         }
@@ -210,6 +194,7 @@ export class RatingsAPISModule implements module.Module {
                 transaction.update(restaurantSnapshot.ref, { noReplyCount: noReplyCount })
                 transaction.update(ratingDocRef, { reply: req.body.reply })
             })
+            res.status(200).send()
         } catch(error) {
             res.status(400).send('Error happened updating the rating')
         }

@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import * as core from "express-serve-static-core"
 import { AuthenticationMiddleware } from '../middleware/authentication_middleware'
@@ -6,7 +5,9 @@ import { ServiceFactory } from '../factories/service_factory'
 import * as module from './module'
 
 export class UserRightAPISModule implements module.Module {
-    factory: ServiceFactory
+    pathPrefix = "me"
+
+    private factory: ServiceFactory
 
     constructor(factory: ServiceFactory) {
         this.factory = factory
@@ -15,23 +16,11 @@ export class UserRightAPISModule implements module.Module {
     appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
         const app = this.factory.makeNewService()
         
-        app.post(
-            'becomeOwner',
-            authenticationMiddleware.authenticate,
-            this.becomeOwner
-        )
+        app.all('/', authenticationMiddleware.authenticate)
 
-        app.post(
-            'becomeRater',
-            authenticationMiddleware.authenticate,
-            this.becomeRater
-        )
-
-        app.post(
-            'becomeAdmin',
-            authenticationMiddleware.authenticate,
-            this.becomeAdmin
-        )
+        app.post('/becomeOwner', this.becomeOwner)
+        app.post('/becomeRater', this.becomeRater)
+        app.post('/becomeAdmin', this.becomeAdmin)
 
         return app
     }

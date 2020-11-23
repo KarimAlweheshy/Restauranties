@@ -8,7 +8,9 @@ import { ServiceFactory } from '../factories/service_factory'
 import * as module from './module'
 
 export class RestaurantsAPISModule implements module.Module {
-    factory: ServiceFactory
+    pathPrefix = "restaurants"
+
+    private factory: ServiceFactory
 
     constructor(factory: ServiceFactory) {
         this.factory = factory
@@ -17,32 +19,12 @@ export class RestaurantsAPISModule implements module.Module {
     appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
         const app = this.factory.makeNewService()
 
-        app.get(
-            '/',
-            authenticationMiddleware.authenticate,
-            authenticationMiddleware.authenticateNotOwner,
-            this.getAllRestaurants
-        )
+        app.all('/', authenticationMiddleware.authenticate)
 
-        app.get(
-            '/mine',
-            authenticationMiddleware.authenticate,
-            authenticationMiddleware.authenticateOwner,
-            this.getMyRestaurants
-        )
-
-        app.post(
-            '/',
-            authenticationMiddleware.authenticate,
-            authenticationMiddleware.authenticateOwner,
-            this.addRestaurant
-        )
-
-        app.get(
-            '/:restaurantID',
-            authenticationMiddleware.authenticate,
-            this.getRestaurantDetails
-        )
+        app.get('/', authenticationMiddleware.authenticateNotOwner, this.getAllRestaurants)
+        app.get('/mine', authenticationMiddleware.authenticateOwner, this.getMyRestaurants)
+        app.post('/', authenticationMiddleware.authenticateOwner, this.addRestaurant)
+        app.get('/:restaurantID', this.getRestaurantDetails)
 
         return app
     }
@@ -53,7 +35,7 @@ export class RestaurantsAPISModule implements module.Module {
         const filteredRestaurantsCollection = this.applyPendingReplyFilterOnDocReferenceIfPossible(restaurantsCollection, req.query)
         const snapshot = await filteredRestaurantsCollection.where('ownerID', '==', req.params.uid).get()
         if (snapshot.empty) { 
-            res.status(200).send('[]') 
+            res.status(204).send() 
         } else {
             res.status(200).send(snapshot.docs.map(doc => this.dtoFromRestaurantDocument(doc)))
         }
@@ -65,7 +47,7 @@ export class RestaurantsAPISModule implements module.Module {
         const filteredRestaurantsCollection = this.applyRatingFilterOnDocReferenceIfPossible(restaurantsCollection, req.query)
         const snapshot = await filteredRestaurantsCollection.orderBy("creationDate").get()
         if (snapshot.empty) { 
-            res.status(200).send('[]') 
+            res.status(204).send() 
         } else {
             res.status(200).send(snapshot.docs.map(doc => this.dtoFromRestaurantDocument(doc)))
         }
