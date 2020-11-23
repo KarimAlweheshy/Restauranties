@@ -19,7 +19,7 @@ const serviceFactory = new DefaultServiceFactory()
 const ratingsAPIS = new ratings_apis.RatingsAPISModule(serviceFactory)
 ratingsAPIS.addRoutesToApp(new AuthenticationMiddleware())
 
-exports.ratingsService = functions.https.onRequest(ratingsAPIS.app)
+exports.ratings = functions.https.onRequest(ratingsAPIS.app)
 // module.exports = {
 //     ...restaurants_apis,
 //     ...user_rights_apis,

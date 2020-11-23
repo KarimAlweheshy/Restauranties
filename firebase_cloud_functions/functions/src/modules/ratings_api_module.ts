@@ -17,27 +17,27 @@ export class RatingsAPISModule implements module.Module {
 
     addRoutesToApp(authenticationMiddleware: AuthenticationMiddleware) {
         this.app.get(
-            'restaurants/:restaurantID/ratings', 
+            '/', 
             authenticationMiddleware.authenticate, 
             this.getRestaurantRatings
         )
 
         this.app.post(
-            'ratings', 
+            '/', 
             authenticationMiddleware.authenticate,
             authenticationMiddleware.authenticateRater, 
             this.addRating
         )
 
         this.app.delete(
-            'ratings/:ratingID', 
+            '/:ratingID', 
             authenticationMiddleware.authenticate,
             authenticationMiddleware.authenticateAdmin, 
             this.deleteRating
         )
 
         this.app.post(
-            'ratings/:ratingID/reply', 
+            '/:ratingID/reply', 
             authenticationMiddleware.authenticate,
             authenticationMiddleware.authenticateOwner, 
             this.replyToRating
@@ -45,9 +45,9 @@ export class RatingsAPISModule implements module.Module {
     }
 
     private async getRestaurantRatings(req: core.Request, res: core.Response, next: core.NextFunction) {
-        const restaurantID = req.params.restaurantID
+        const restaurantID = req.query.restaurant_id
         if (!restaurantID) {
-            res.status(400).send('Missing restaurantID body arg')
+            res.status(400).send('Missing restaurantID query arg')
             return
         }
     
