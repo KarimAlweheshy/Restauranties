@@ -5,46 +5,49 @@ import Restaurant from '../models/restaurant'
 import * as RatingUtilities from '../utilities/rating_utilities'
 import * as core from "express-serve-static-core"
 import { AuthenticationMiddleware } from '../middleware/authentication_middleware'
-import { ServiceFactory } from '../factories/ServiceFactory'
+import { ServiceFactory } from '../factories/service_factory'
 import * as module from './module'
 
 export class RatingsAPISModule implements module.Module {
-    app: core.Express
+    factory: ServiceFactory
 
     constructor(factory: ServiceFactory) {
-        this.app = factory.makeNewService()
+        this.factory = factory
     }
 
-    addRoutesToApp(authenticationMiddleware: AuthenticationMiddleware) {
-        this.app.get(
+    appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
+        const app = this.factory.makeNewService()
+        app.get(
             '/', 
             authenticationMiddleware.authenticate, 
             this.getRestaurantRatings
         )
 
-        this.app.post(
+        app.post(
             '/', 
             authenticationMiddleware.authenticate,
             authenticationMiddleware.authenticateRater, 
             this.addRating
         )
 
-        this.app.delete(
+        app.delete(
             '/:ratingID', 
             authenticationMiddleware.authenticate,
             authenticationMiddleware.authenticateAdmin, 
             this.deleteRating
         )
 
-        this.app.post(
+        app.post(
             '/:ratingID/reply', 
             authenticationMiddleware.authenticate,
             authenticationMiddleware.authenticateOwner, 
             this.replyToRating
         )
+
+        return app
     }
 
-    private async getRestaurantRatings(req: core.Request, res: core.Response, next: core.NextFunction) {
+    private async getRestaurantRatings(req: core.Request, res: core.Response) {
         const restaurantID = req.query.restaurant_id
         if (!restaurantID) {
             res.status(400).send('Missing restaurantID query arg')
@@ -89,7 +92,7 @@ export class RatingsAPISModule implements module.Module {
         }))
     }
 
-    private async addRating(req: core.Request, res: core.Response, next: core.NextFunction) {
+    private async addRating(req: core.Request, res: core.Response) {
         if (req.body as Rating === undefined) {
             res.status(400).send('Missing fields')
             return
@@ -140,7 +143,7 @@ export class RatingsAPISModule implements module.Module {
         }
     }
 
-    private async deleteRating(req: core.Request, res: core.Response, next: core.NextFunction) {
+    private async deleteRating(req: core.Request, res: core.Response) {
         const db = admin.firestore()
 
         const ratingDocRef = db.collection("ratings").doc(req.params.ratingID)
@@ -166,7 +169,7 @@ export class RatingsAPISModule implements module.Module {
         }
     }
 
-    private async replyToRating(req: core.Request, res: core.Response, next: core.NextFunction) {
+    private async replyToRating(req: core.Request, res: core.Response) {
         const db = admin.firestore()
 
         const ratingDocRef = db.collection("ratings").doc(req.params.ratingID)

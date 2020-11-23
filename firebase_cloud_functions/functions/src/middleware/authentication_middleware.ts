@@ -47,4 +47,13 @@ export class AuthenticationMiddleware {
             res.status(403).send('Only Owner is allowed to access such calls')
         }
     }
+
+    async authenticateNotOwner(req: core.Request, res: core.Response, next: core.NextFunction) {
+        try {
+            await UserUtilities.verifyIsNotOwner(admin.auth(), req.params.uid)
+            next()
+        } catch {
+            res.status(403).send('Only Owner is allowed to access such calls')
+        }
+    }
 }
