@@ -15,8 +15,8 @@ protocol RestaurantsListViewModelStratey: RestaurantsFilterDataSource, Restauran
     func title() -> String
     func tabBarSystemImageName() -> String
     func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel
-    func httpsCallablePath() -> String
-    func httpsCallableData() -> [String: Any]?
+
+    func refreshRestaurants(completionHandler: @escaping (Result<[Restaurant], Error>) -> Void)
 }
 
 final class RestaurantsListDefaultViewModel {
@@ -36,22 +36,11 @@ final class RestaurantsListDefaultViewModel {
 extension RestaurantsListDefaultViewModel: RestaurantsListViewModel {
     func refresh() {
         view?.showLoading(true)
-        let path = strategy.httpsCallablePath()
-        let callable = Functions.functions().httpsCallable(path)
-        callable.call(strategy.httpsCallableData()) { [weak self] result, error in
+        strategy.refreshRestaurants { [weak self] result in
             guard let self = self else { return }
-            defer {
-                self.view?.showLoading(false)
-                self.view?.reload()
-            }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            guard
-                let data = result?.data,
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let restaurants = try? decoder.decode([Restaurant].self, from: jsonData)
-            else { return self.restaurants = [] }
-            self.restaurants = restaurants
+            self.restaurants = (try? result.get()) ?? []
+            self.view?.showLoading(false)
+            self.view?.reload()
         }
     }
 

@@ -8,18 +8,27 @@
 import UIKit
 
 struct RestaurantsListViewControllerFactory {
+    private let service: RestaurantsBackendService
+
+    init() {
+        service = RestaurantsBackendFirebaseService(
+            env: FirebaseReleaseHTTPEnvironment(),
+            authenticator: FirebaseHTTPAuthenticator()
+        )
+    }
+
     func makeForRater() -> RestaurantsListViewController {
-        let strategy = RestaurantsListViewModelRaterStratey()
+        let strategy = RestaurantsListViewModelRaterStratey(service: service)
         return makeViewController(strategy: strategy)
     }
 
     func makeForOwner() -> RestaurantsListViewController {
-        let strategy = RestaurantsListViewModelOwnerStratey()
+        let strategy = RestaurantsListViewModelOwnerStratey(service: service)
         return makeViewController(strategy: strategy)
     }
 
     func makeForAdmin() -> RestaurantsListViewController {
-        let strategy = RestaurantsListViewModelAdminStratey()
+        let strategy = RestaurantsListViewModelAdminStratey(service: service)
         return makeViewController(strategy: strategy)
     }
 }

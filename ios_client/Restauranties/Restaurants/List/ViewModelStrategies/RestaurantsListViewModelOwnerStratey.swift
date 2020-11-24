@@ -6,9 +6,16 @@
 //
 
 import Foundation
+import Combine
 
 final class RestaurantsListViewModelOwnerStratey {
+    private let service: RestaurantsBackendService
     private var selectedFilter: String? = nil
+    private var cancellable: AnyCancellable?
+
+    init(service: RestaurantsBackendService) {
+        self.service = service
+    }
 }
 
 // MARK: - RestaurantsListViewModelStratey
@@ -18,18 +25,12 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func httpsCallableData() -> [String : Any]? {
-        guard
-            let selectedFilter = selectedFilter,
-            let index = filters().firstIndex(of: selectedFilter)
-        else {
-            return nil
-        }
-        return ["filterPendingReply": index == 0 ? true : false]
-    }
-
-    func httpsCallablePath() -> String {
-        "myRestaurants"
+    func refreshRestaurants(completionHandler: @escaping (Result<[Restaurant], Error>) -> Void) {
+        cancellable?.cancel()
+        cancellable = service.getMyRestaurants(
+            filter: filter(),
+            completionHandler: completionHandler
+        )
     }
 
     func shouldShowAddRestaurant() -> Bool {
@@ -60,7 +61,7 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
 
 extension RestaurantsListViewModelOwnerStratey {
     func filters() -> [String] {
-        ["Replies Missing", "Replied To All"]
+        MyRestaurantsFilter.allCases.compactMap { $0.rawValue }
     }
 
     func selectedFilterIndex() -> Int? {
@@ -78,3 +79,11 @@ extension RestaurantsListViewModelOwnerStratey {
     }
 }
 
+// MARK: - Private Methods
+
+extension RestaurantsListViewModelOwnerStratey {
+    private func filter() -> MyRestaurantsFilter? {
+        guard let selectedFilter = selectedFilter else { return nil }
+        return MyRestaurantsFilter(rawValue: selectedFilter)
+    }
+}

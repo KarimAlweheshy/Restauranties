@@ -6,8 +6,16 @@
 //
 
 import Foundation
+import Combine
 
-final class RestaurantsListViewModelAdminStratey {}
+final class RestaurantsListViewModelAdminStratey {
+    private let service: RestaurantsBackendService
+    private var cancellable: AnyCancellable?
+
+    init(service: RestaurantsBackendService) {
+        self.service = service
+    }
+}
 
 // MARK: - RestaurantsListViewModelStratey
 
@@ -16,12 +24,12 @@ extension RestaurantsListViewModelAdminStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func httpsCallableData() -> [String : Any]? {
-        nil
-    }
-
-    func httpsCallablePath() -> String {
-        "allRestaurants"
+    func refreshRestaurants(completionHandler: @escaping (Result<[Restaurant], Error>) -> Void) {
+        cancellable?.cancel()
+        cancellable = service.getAllRestaurants(
+            filter: nil,
+            completionHandler: completionHandler
+        )
     }
 
     func shouldShowAddRestaurant() -> Bool {
