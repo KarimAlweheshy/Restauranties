@@ -5,7 +5,7 @@ import * as admin from 'firebase-admin'
 export class AuthenticationMiddleware {
     async authenticate(req: core.Request, res: core.Response, next: core.NextFunction) {
         if (req.headers.authorization === undefined) {
-            res.status(401).send('Missing auth token')
+            res.sendStatus(401)
             return 
         }
         
@@ -13,17 +13,17 @@ export class AuthenticationMiddleware {
         try {
             const decodedToken = await admin.auth().verifyIdToken(token)
             await UserUtilities.findUser(admin.auth(), decodedToken.uid)
-            req.params.uid = decodedToken.uid
+            res.locals.uid = decodedToken.uid
             next()
         } catch {
-            res.status(401).send('Invalid token')
+            res.sendStatus(401)
             return 
         }
     }
 
     async authenticateRater(req: core.Request, res: core.Response, next: core.NextFunction) {
         try {
-            await UserUtilities.verifyIsRaterUser(admin.auth(), req.params.uid)
+            await UserUtilities.verifyIsRaterUser(admin.auth(), res.locals.uid)
             next()
         } catch {
             res.status(403).send('Only Rater is allowed to access such calls')
@@ -32,7 +32,7 @@ export class AuthenticationMiddleware {
 
     async authenticateAdmin(req: core.Request, res: core.Response, next: core.NextFunction) {
         try {
-            await UserUtilities.verifyIsAdminUser(admin.auth(), req.params.uid)
+            await UserUtilities.verifyIsAdminUser(admin.auth(), res.locals.uid)
             next()
         } catch {
             res.status(403).send('Only Admin is allowed to access such calls')
@@ -41,7 +41,7 @@ export class AuthenticationMiddleware {
 
     async authenticateOwner(req: core.Request, res: core.Response, next: core.NextFunction) {
         try {
-            await UserUtilities.verifyIsRestaurantOwnerUser(admin.auth(), req.params.uid)
+            await UserUtilities.verifyIsRestaurantOwnerUser(admin.auth(), res.locals.uid)
             next()
         } catch {
             res.status(403).send('Only Owner is allowed to access such calls')
@@ -50,7 +50,7 @@ export class AuthenticationMiddleware {
 
     async authenticateNotOwner(req: core.Request, res: core.Response, next: core.NextFunction) {
         try {
-            await UserUtilities.verifyIsNotOwner(admin.auth(), req.params.uid)
+            await UserUtilities.verifyIsNotOwner(admin.auth(), res.locals.uid)
             next()
         } catch {
             res.status(403).send('Only Non-Owner is allowed to access such calls')

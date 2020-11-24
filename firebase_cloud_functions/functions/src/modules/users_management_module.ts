@@ -15,10 +15,10 @@ export class UserManagementAPISModule implements module.Module {
         this.factory = factory
     }
 
-    appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
+    appForModule = (authenticationMiddleware: AuthenticationMiddleware): core.Express => {
         const app = this.factory.makeNewService()
 
-        app.all('/', authenticationMiddleware.authenticate, authenticationMiddleware.authenticateAdmin)
+        app.use(authenticationMiddleware.authenticate, authenticationMiddleware.authenticateAdmin)
 
         app.get('/', this.getAllUsers)
         app.delete('/:userID', this.deleteUser)
@@ -26,9 +26,9 @@ export class UserManagementAPISModule implements module.Module {
         return app
     }
 
-    private async getAllUsers(req: core.Request, res: core.Response) {
+    private getAllUsers = async (req: core.Request, res: core.Response) => {
         const result = await admin.auth().listUsers();
-        res.status(200).send(
+        res.status(200).json(
             result.users.map(user => {
                 return { 
                     username: user.displayName,
@@ -43,7 +43,7 @@ export class UserManagementAPISModule implements module.Module {
         )
     }
 
-    private async deleteUser(req: core.Request, res: core.Response) {
+    private deleteUser = async (req: core.Request, res: core.Response) => {
         const userID = req.params.userID
         const user = await UserUtilities.findUser(admin.auth(), userID)
         if (UserUtilities.isAdminUser(user)) {
@@ -70,7 +70,7 @@ export class UserManagementAPISModule implements module.Module {
         }
     }
 
-    private async deleteAllRestaurantOwnerDocument(userID: string, db: FirebaseFirestore.Firestore, batch: FirebaseFirestore.WriteBatch) {
+    private deleteAllRestaurantOwnerDocument = async (userID: string, db: FirebaseFirestore.Firestore, batch: FirebaseFirestore.WriteBatch) => {
         const restaurantsQuery = db.collection("restaurants").where('ownerID', '==', userID)
         const restaurantsSnapshots = await restaurantsQuery.get()
         
@@ -89,7 +89,7 @@ export class UserManagementAPISModule implements module.Module {
         return batch
     }
     
-    private async deleteAllRaterDocument(userID: string, db: FirebaseFirestore.Firestore, batch: FirebaseFirestore.WriteBatch) {
+    private deleteAllRaterDocument = async (userID: string, db: FirebaseFirestore.Firestore, batch: FirebaseFirestore.WriteBatch) => {
         const ratingsQuery = db.collection("ratings").where('ownerID', '==', userID)
         const ratingsQuerySnapshots = await ratingsQuery.get()
         const ratings = ratingsQuerySnapshots.docs.map(doc => doc.data())

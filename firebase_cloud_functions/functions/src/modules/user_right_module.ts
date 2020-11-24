@@ -13,10 +13,10 @@ export class UserRightAPISModule implements module.Module {
         this.factory = factory
     }
 
-    appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
+    appForModule = (authenticationMiddleware: AuthenticationMiddleware): core.Express => {
         const app = this.factory.makeNewService()
         
-        app.all('/', authenticationMiddleware.authenticate)
+        app.use(authenticationMiddleware.authenticate)
 
         app.post('/becomeOwner', this.becomeOwner)
         app.post('/becomeRater', this.becomeRater)
@@ -25,18 +25,18 @@ export class UserRightAPISModule implements module.Module {
         return app
     }
 
-    private async becomeOwner(req: core.Request, res: core.Response) {
-        await admin.auth().setCustomUserClaims(req.params.uid, { owner: true })
-        return res.status(200).send({ message: 'User is now an owner' })
+    private becomeOwner = async (req: core.Request, res: core.Response) => {
+        await admin.auth().setCustomUserClaims(res.locals.uid, { owner: true })
+        return res.status(200).json({ message: 'User is now an owner' })
     }
 
-    private async becomeRater(req: core.Request, res: core.Response) {
-        await admin.auth().setCustomUserClaims(req.params.uid, {})
-        return res.status(200).send({ message: 'User is now a rater' })
+    private becomeRater = async (req: core.Request, res: core.Response) => {
+        await admin.auth().setCustomUserClaims(res.locals.uid, {})
+        return res.status(200).json({ message: 'User is now a rater' })
     }
 
-    private async becomeAdmin(req: core.Request, res: core.Response) {
-        await admin.auth().setCustomUserClaims(req.params.uid, { admin: true })
-        return res.status(200).send({ message: 'User is now an admin' })
+    private becomeAdmin = async (req: core.Request, res: core.Response) => {
+        await admin.auth().setCustomUserClaims(res.locals.uid, { admin: true })
+        return res.status(200).json({ message: 'User is now an admin' })
     }
 }

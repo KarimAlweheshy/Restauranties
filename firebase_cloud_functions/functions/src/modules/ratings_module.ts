@@ -17,10 +17,10 @@ export class RatingsAPISModule implements module.Module {
         this.factory = factory
     }
 
-    appForModule(authenticationMiddleware: AuthenticationMiddleware): core.Express {
+    appForModule = (authenticationMiddleware: AuthenticationMiddleware): core.Express => {
         const app = this.factory.makeNewService()
 
-        app.all('/', authenticationMiddleware.authenticate)
+        app.use(authenticationMiddleware.authenticate)
         
         app.get('/',  this.getRestaurantRatings)
         app.post('/', authenticationMiddleware.authenticateRater, this.addRating)
@@ -30,7 +30,7 @@ export class RatingsAPISModule implements module.Module {
         return app
     }
 
-    private async getRestaurantRatings(req: core.Request, res: core.Response) {
+    private getRestaurantRatings = async (req: core.Request, res: core.Response) => {
         const restaurantID = req.query.restaurant_id
         if (!restaurantID) {
             res.status(400).send('Missing restaurantID query arg')
@@ -48,7 +48,7 @@ export class RatingsAPISModule implements module.Module {
         const ratingsCollection = db.collection("ratings").orderBy("visitDate", 'desc')
         const snapshot = await ratingsCollection.where('restaurantID', '==', restaurantID).get()
         if (!snapshot.docs) { 
-            res.status(204).send() 
+            res.status(200).json('[]') 
             return
         }
     
@@ -62,7 +62,7 @@ export class RatingsAPISModule implements module.Module {
         const userMap = new Map()
         usersResult.users.map(user => userMap.set(user.uid, user))
 
-        res.status(200).send(ratingDocMaps.map(ratingDocMap => {
+        res.status(200).json(ratingDocMaps.map(ratingDocMap => {
             const user = userMap.get(ratingDocMap.rating.ownerID)
             return {
                 ...ratingDocMap.rating,
@@ -75,7 +75,7 @@ export class RatingsAPISModule implements module.Module {
         }))
     }
 
-    private async addRating(req: core.Request, res: core.Response) {
+    private addRating =  async (req: core.Request, res: core.Response) => {
         if (req.body as Rating === undefined) {
             res.status(400).send('Missing fields')
             return
@@ -99,7 +99,7 @@ export class RatingsAPISModule implements module.Module {
         const rating = {
             visitDate: new admin.firestore.Timestamp(parseInt(req.body.visitDate), 0),
             restaurantID: req.body.restaurantID,
-            ownerID: req.params.uid,
+            ownerID: res.locals.uid,
             stars: req.body.stars,
             comment: req.body.comment,
             creationDate: admin.firestore.Timestamp.fromDate(new Date()),
@@ -120,13 +120,13 @@ export class RatingsAPISModule implements module.Module {
                 transaction.update(restaurantDocSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating, noReplyCount: newTotalNoReply })
                 transaction.create(newRatingDocRef, rating)
             })
-            res.status(201).send()
+            res.sendStatus(201)
         } catch (error) {
             res.status(400).send('Error adding the new rating')
         }
     }
 
-    private async deleteRating(req: core.Request, res: core.Response) {
+    private deleteRating = async (req: core.Request, res: core.Response) => {
         const db = admin.firestore()
 
         const ratingDocRef = db.collection("ratings").doc(req.params.ratingID)
@@ -147,13 +147,13 @@ export class RatingsAPISModule implements module.Module {
                 transaction.update(restaurantDocSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating, noReplyCount: newTotalNoReply })
                 transaction.delete(ratingDocRef)
             })
-            res.status(200).send()
+            res.sendStatus(200)
         } catch(error) {
             res.status(400).send('Error happened deleting the rating')
         }
     }
 
-    private async replyToRating(req: core.Request, res: core.Response) {
+    private replyToRating = async (req: core.Request, res: core.Response) => {
         const db = admin.firestore()
 
         const ratingDocRef = db.collection("ratings").doc(req.params.ratingID)
@@ -172,7 +172,7 @@ export class RatingsAPISModule implements module.Module {
         }
         const restaurant = restaurantSnapshot.data() as Restaurant
 
-        if (restaurant.ownerID !== req.params.uid) {
+        if (restaurant.ownerID !== res.locals.uid) {
             res.status(400).send('User does not own this restaurant')
             return
         }
@@ -194,13 +194,13 @@ export class RatingsAPISModule implements module.Module {
                 transaction.update(restaurantSnapshot.ref, { noReplyCount: noReplyCount })
                 transaction.update(ratingDocRef, { reply: req.body.reply })
             })
-            res.status(200).send()
+            res.sendStatus(200)
         } catch(error) {
             res.status(400).send('Error happened updating the rating')
         }
     }
 
-    private async assertRestaurantExists(restaurantID: string) {
+    private assertRestaurantExists = async (restaurantID: string) => {
         const db = admin.firestore()
         const restaurantSnapshot = await db.collection("restaurants").doc(restaurantID).get()
         
