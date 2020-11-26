@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ProfileView: AnyObject {
+    func reload()
+}
+
 final class ProfileViewController: UIViewController {
     private var viewModel: ProfileViewModel
 
@@ -42,6 +46,14 @@ final class ProfileViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         userImageView.layer.cornerRadius = userImageView.frame.height / 2
+    }
+}
+
+// MARK: - ProfileView
+
+extension ProfileViewController: ProfileView {
+    func reload() {
+        refreshView()
     }
 }
 

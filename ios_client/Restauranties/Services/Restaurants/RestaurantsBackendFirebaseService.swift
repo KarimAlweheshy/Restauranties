@@ -88,7 +88,7 @@ extension RestaurantsBackendFirebaseService {
         from urlRequest: URLRequest,
         completionHandler: @escaping (Result<[Restaurant], Error>) -> Void
     ) -> AnyCancellable {
-        return URLSession.shared
+        URLSession.shared
             .dataTaskPublisher(for: urlRequest)
             .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
             .decode(type: [Restaurant].self, decoder: decoder)

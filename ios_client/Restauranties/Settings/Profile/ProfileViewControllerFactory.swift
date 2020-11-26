@@ -16,21 +16,32 @@ struct ProfileViewControllerFactory {
     ) -> ProfileViewController {
         let storyboard = UIStoryboard(name: "Profile", bundle: nil)
 
-        var viewModel: ProfileViewModel
+        var strategy: ProfileViewModelStrategy
         switch right {
         case .admin:
-            viewModel = ProfileAdminViewModel(delegate: delegate, user: user)
+            strategy = ProfileAdminViewModelStrategy()
         case .rater:
-            viewModel = ProfileRaterViewModel(delegate: delegate, user: user)
+            strategy = ProfileRaterViewModelStrategy()
         case .restaurantOwner:
-            viewModel = ProfileRestaurantOwnerViewModel(delegate: delegate, user: user)
+            strategy = ProfileRestaurantOwnerViewModelStrategy()
         case .unknown:
-            viewModel = ProfileUnknownViewModel(delegate: delegate, user: user)
+            strategy = ProfileUnknownViewModelStrategy()
         }
 
+        let service = SettingsBackendFirebaseService(
+            env: FirebaseReleaseHTTPEnvironment(),
+            authenticator: FirebaseHTTPAuthenticator()
+        )
+        let viewModel = ProfileDefaultViewModel(
+            strategy: strategy,
+            settingsBackendService: service
+        )
         let viewController: ProfileViewController? = storyboard.instantiateInitialViewController { coder in
             ProfileViewController(coder: coder, viewModel: viewModel)
         }
+
+        viewModel.view = viewController
+        viewModel.delegate = delegate
         return viewController!
     }
 }
