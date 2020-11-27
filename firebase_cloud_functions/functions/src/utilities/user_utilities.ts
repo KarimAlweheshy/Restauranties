@@ -7,40 +7,36 @@ export function verifyAuth(context: functions.https.CallableContext) {
     }
 }
   
-export async function verifyIsAdminUser(auth: admin.auth.Auth, uid: string) {
-    const user = await findUser(auth, uid)
-    if (!isAdminUser(user)) {
+export async function verifyIsAdminUser(claims: {[key: string]: any} | null) {
+    if (!isAdminUser(claims)) {
       throw new functions.https.HttpsError('failed-precondition', 'Only Restaurant Owner is allowed to access such calls');
     }
 }
   
-export async function verifyIsRaterUser(auth: admin.auth.Auth, uid: string) {
-    const user = await findUser(auth, uid)
-    if (isAdminUser(user) || isRestaurantOwnerUser(user)) {
+export async function verifyIsRaterUser(claims: {[key: string]: any} | null) {
+    if (isAdminUser(claims) || isRestaurantOwnerUser(claims)) {
       throw new functions.https.HttpsError('failed-precondition', 'Only Rater is allowed to access such calls');
     }
 }
 
-export async function verifyIsNotOwner(auth: admin.auth.Auth, uid: string) {
-  const user = await findUser(auth, uid)
-  if (isRestaurantOwnerUser(user)) {
+export async function verifyIsNotOwner(claims: {[key: string]: any} | null) {
+  if (isRestaurantOwnerUser(claims)) {
     throw new functions.https.HttpsError('failed-precondition', 'Owner is not allowed to access this call');
   }
 }
   
-export async function verifyIsRestaurantOwnerUser(auth: admin.auth.Auth, uid: string) {
-    const user = await findUser(auth, uid)
-    if (!isRestaurantOwnerUser(user)) {
+export async function verifyIsRestaurantOwnerUser(claims: {[key: string]: any} | null) {
+    if (!isRestaurantOwnerUser(claims)) {
       throw new functions.https.HttpsError('failed-precondition', 'Only Admin is allowed to access such calls');
     }
 }
 
-export function isAdminUser(user: admin.auth.UserRecord): boolean {
-    return user.customClaims?.admin === true
+export function isAdminUser(claims: {[key: string]: any} | null): boolean {
+    return claims?.admin === true
 }
   
-export function isRestaurantOwnerUser(user: admin.auth.UserRecord): boolean {
-    return user.customClaims?.owner === true
+export function isRestaurantOwnerUser(claims: {[key: string]: any} | null): boolean {
+    return claims?.owner === true
 }
 
 export async function findUser(auth: admin.auth.Auth, uid: string) {
