@@ -31,14 +31,14 @@ export class RatingsAPISModule implements module.Module {
     }
 
     private getRestaurantRatings = async (req: core.Request, res: core.Response) => {
-        const restaurantID = req.query.restaurant_id
+        const restaurantID = req.query.restaurant_id as string
         if (!restaurantID) {
             res.status(400).send('Missing restaurantID query arg')
             return
         }
     
         try {
-            await this.assertRestaurantExists(req.params.restaurantID)
+            await this.assertRestaurantExists(restaurantID)
         } catch {
             res.status(400).send('Restaurant does not exist')
             return
@@ -66,6 +66,7 @@ export class RatingsAPISModule implements module.Module {
             const user = userMap.get(ratingDocMap.rating.ownerID)
             return {
                 ...ratingDocMap.rating,
+                id: ratingDocMap.doc.id,
                 username: user.displayName,
                 photoURL: user.photoURL,
                 creationDate: ratingDocMap.doc.createTime.seconds,
