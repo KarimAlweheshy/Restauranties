@@ -31,6 +31,7 @@ extension BackendService {
         request.httpMethod = httpMethod.rawValue
         request.httpBody = httpBody
         authenticator.addAuthentication(to: &request)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         return request
     }

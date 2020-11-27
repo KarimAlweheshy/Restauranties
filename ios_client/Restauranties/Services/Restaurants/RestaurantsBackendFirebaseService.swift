@@ -68,17 +68,80 @@ extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
     }
 
     func createNewRestaurant(
-        restaurant: Restaurant,
-        completionHandler: @escaping RestaurantCallback
+        name: String,
+        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
     ) -> AnyCancellable {
-        fatalError()
+        let postBody = ["name": name]
+
+        let urlRequest = url(
+            httpMethod: .post,
+            path: servicePathPrefix + "/",
+            httpBody: try? JSONEncoder().encode(postBody)
+        )
+
+        return URLSession.shared
+            .dataTaskPublisher(for: urlRequest)
+            .tryCompactMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .decode(type: Restaurant.self, decoder: decoder)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error): completionHandler(.failure(error))
+                }
+            }, receiveValue: { restaurant in
+                completionHandler(.success(restaurant))
+            })
+    }
+
+    func restaurantDetails(
+        restaurantID: String,
+        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
+    ) -> AnyCancellable {
+        let urlRequest = url(
+            httpMethod: .get,
+            path: servicePathPrefix + "/" + restaurantID
+        )
+
+        return URLSession.shared
+            .dataTaskPublisher(for: urlRequest)
+            .tryCompactMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .decode(type: Restaurant.self, decoder: decoder)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error): completionHandler(.failure(error))
+                }
+            }, receiveValue: { restaurant in
+                completionHandler(.success(restaurant))
+            })
     }
 
     func deleteRestaurant(
         restaurantID: String,
         completionHandler: @escaping (Result<Void, Error>) -> Void
     ) -> AnyCancellable {
-        fatalError()
+        let urlRequest = url(
+            httpMethod: .delete,
+            path: servicePathPrefix + "/" + restaurantID
+        )
+
+        return URLSession.shared
+            .dataTaskPublisher(for: urlRequest)
+            .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error): completionHandler(.failure(error))
+                }
+            }, receiveValue: { _ in
+                completionHandler(.success(()))
+            })
     }
 }
 
@@ -90,7 +153,7 @@ extension RestaurantsBackendFirebaseService {
     ) -> AnyCancellable {
         URLSession.shared
             .dataTaskPublisher(for: urlRequest)
-            .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .tryCompactMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
             .decode(type: [Restaurant].self, decoder: decoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

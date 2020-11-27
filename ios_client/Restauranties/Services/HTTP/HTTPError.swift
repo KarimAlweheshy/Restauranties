@@ -9,10 +9,10 @@ import Foundation
 
 struct HTTPError: Error {
     let statusCode: Int
-    let data: Data
+    let data: Data?
 
     var failureReason: String? {
-        String(data: data, encoding: .utf8)
+        data.flatMap { String(data: $0, encoding: .utf8) }
     }
     
     var localizedError: String {

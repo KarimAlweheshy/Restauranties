@@ -8,7 +8,7 @@
 import Foundation
 
 struct HTTPResponseParser {
-    func dataOrError(data: Data, response: URLResponse) throws -> Data {
+    func dataOrError(data: Data?, response: URLResponse) throws -> Data? {
         guard let response = response as? HTTPURLResponse else {
             fatalError("Support only http")
         }

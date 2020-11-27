@@ -24,8 +24,13 @@ protocol RestaurantsBackendService: BackendService {
     ) -> AnyCancellable
 
     func createNewRestaurant(
-        restaurant: Restaurant,
-        completionHandler: @escaping RestaurantCallback
+        name: String,
+        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
+    ) -> AnyCancellable
+
+    func restaurantDetails(
+        restaurantID: String,
+        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
     ) -> AnyCancellable
 
     func deleteRestaurant(
