@@ -6,6 +6,7 @@ import * as core from "express-serve-static-core"
 import { AuthenticationMiddleware } from '../middleware/authentication_middleware'
 import { ServiceFactory } from '../factories/service_factory'
 import * as module from './module'
+import * as UserUtilities from '../utilities/user_utilities'
 
 export class RestaurantsAPISModule implements module.Module {
     pathPrefix = "restaurants"
@@ -71,7 +72,11 @@ export class RestaurantsAPISModule implements module.Module {
         if (!doc.exists) {
             res.status(400).send('Restaurant with id ' + restaurantID + ' not found') 
         } else {
-            res.status(200).json(this.dtoFromRestaurantDocument(doc))
+            const response = this.dtoFromRestaurantDocument(doc)
+            if (UserUtilities.verifyIsRaterUser(res.locals.claims)) {
+                delete response.noReplyCount
+            }
+            res.status(200).json(response)
         }
     }
 
