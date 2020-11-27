@@ -25,6 +25,7 @@ export class RestaurantsAPISModule implements module.Module {
         app.get('/mine', authenticationMiddleware.authenticateOwner, this.getMyRestaurants)
         app.post('/', authenticationMiddleware.authenticateOwner, this.addRestaurant)
         app.get('/:restaurantID', this.getRestaurantDetails)
+        app.delete('/:restaurantID', authenticationMiddleware.authenticateAdmin, this.deleteRestaurant)
 
         return app
     }
@@ -72,6 +73,14 @@ export class RestaurantsAPISModule implements module.Module {
         } else {
             res.status(200).json(this.dtoFromRestaurantDocument(doc))
         }
+    }
+
+    private deleteRestaurant = async (req: core.Request, res: core.Response) => {
+        const restaurantID = req.params.restaurantID
+        const db = admin.firestore()
+        const restaurantsRef = db.collection("restaurants").doc(restaurantID)
+        await restaurantsRef.delete()
+        res.sendStatus(200)
     }
 
     private addRestaurant = async (req: core.Request, res: core.Response) => {
