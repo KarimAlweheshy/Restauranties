@@ -106,4 +106,46 @@ extension RatingsBackendFirebaseService: RatingsBackendService {
                 completionHandler(.success(()))
             })
     }
+
+    func create(
+        restaurantID: String,
+        visitDate: Date,
+        comment: String,
+        stars: Int,
+        completionHandler: @escaping (Result<Void, Error>) -> Void
+    ) -> AnyCancellable {
+        struct Body: Codable {
+            let restaurantID: String
+            let visitDate: TimeInterval
+            let comment: String
+            let stars: Int
+        }
+
+        let postBody = Body(
+            restaurantID: restaurantID,
+            visitDate: visitDate.timeIntervalSince1970,
+            comment: comment,
+            stars: stars
+        )
+
+        let urlRequest = url(
+            httpMethod: .post,
+            path: servicePathPrefix,
+            httpBody: try? JSONEncoder().encode(postBody)
+        )
+
+        return URLSession.shared
+            .dataTaskPublisher(for: urlRequest)
+            .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error): completionHandler(.failure(error))
+                }
+            }, receiveValue: { _ in
+                completionHandler(.success(()))
+            })
+    }
 }

@@ -24,4 +24,12 @@ protocol RatingsBackendService: BackendService {
         ratingID: String,
         completionHandler: @escaping (Result<Void, Error>) -> Void
     ) -> AnyCancellable
+
+    func create(
+        restaurantID: String,
+        visitDate: Date,
+        comment: String,
+        stars: Int,
+        completionHandler: @escaping (Result<Void, Error>) -> Void
+    ) -> AnyCancellable
 }

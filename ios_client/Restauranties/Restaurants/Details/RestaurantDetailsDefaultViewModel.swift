@@ -40,7 +40,10 @@ extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
     }
 
     func ratingFormViewModel() -> RatingFormViewModel {
-        let viewModel = RatingFormRatingViewModel(restaurant: restaurant)
+        let viewModel = RatingFormRatingViewModel(
+            service: ratingsService,
+            restaurant: restaurant
+        )
         viewModel.delegate = self
         return viewModel
     }

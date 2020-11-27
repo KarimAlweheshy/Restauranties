@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Firebase
+import Combine
 
 protocol RatingFormRatingViewModelDelegate: AnyObject {
     func didFinish()
@@ -26,13 +26,19 @@ final class RatingFormRatingViewModel {
     weak var view: RatingFormView?
     weak var delegate: RatingFormRatingViewModelDelegate?
 
+    private let service: RatingsBackendService
     private let restaurant: Restaurant
 
     private var stars = 5
     private var comment: String?
     private var visitDate = Date()
+    private var disposables = Set<AnyCancellable>()
 
-    init(restaurant: Restaurant) {
+    init(
+        service: RatingsBackendService,
+        restaurant: Restaurant
+    ) {
+        self.service = service
         self.restaurant = restaurant
     }
 }
@@ -50,20 +56,16 @@ extension RatingFormRatingViewModel: RatingFormViewModel {
             comment.count > 0
         else { return }
         view?.showLoading(true)
-        Functions
-            .functions()
-            .httpsCallable("addRating")
-            .call([
-                "restaurantID": restaurant.id,
-                "visitDate": visitDate.timeIntervalSince1970,
-                "stars": stars,
-                "comment": comment
-            ]
-            ) { [weak delegate, weak view] result, error in
-                view?.showLoading(false)
-                guard error == nil else { return }
-                delegate?.didFinish()
-            }
+        let cancellable = service.create(
+            restaurantID: restaurant.id,
+            visitDate: visitDate,
+            comment: comment,
+            stars: stars) { [weak delegate, weak view] result in
+            view?.showLoading(false)
+            guard (try? result.get()) != nil else { return }
+            delegate?.didFinish()
+        }
+        disposables.insert(cancellable)
     }
 
     func didChange(stars: Int) {
