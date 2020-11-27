@@ -6,23 +6,27 @@
 //
 
 import Foundation
-import Firebase
+import UIKit
 import Combine
 
 final class RestaurantDetailsDefaultViewModel {
     weak var view: RestaurantDetailsView?
     private let userRight: UserRight
     private let restaurantsService: RestaurantsBackendService
+    private let ratingsService: RatingsBackendService
+
     private var restaurant: Restaurant
     private var ratings = [Rating]()
     private var disposables = Set<AnyCancellable>()
 
     init(
         restaurantsService: RestaurantsBackendService,
+        ratingsService: RatingsBackendService,
         restaurant: Restaurant,
         userRight: UserRight
     ) {
         self.restaurantsService = restaurantsService
+        self.ratingsService = ratingsService
         self.restaurant = restaurant
         self.userRight = userRight
     }
@@ -69,21 +73,27 @@ extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
     }
 
     func didAddReplyForRating(reply: String, at indexPath: IndexPath) {
-        let callable = Functions.functions().httpsCallable("replyToRating")
         let rating = ratings[indexPath.row]
-        callable.call(["id": rating.id, "reply": reply]) { [weak self] result, error in
-            guard let self = self, error == nil else { return }
-            self.refresh()
+        let cancellable = ratingsService.reply(ratingID: rating.id, reply: reply) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .failure: break
+            case .success: self.refresh()
+            }
         }
+        disposables.insert(cancellable)
     }
 
     func didTapDeleteRating(at indexPath: IndexPath) {
-        let callable = Functions.functions().httpsCallable("deleteRating")
         let rating = ratings[indexPath.row]
-        callable.call(["id": rating.id]) { [weak self] result, error in
-            guard let self = self, error == nil else { return }
-            self.refresh()
+        let cancellable = ratingsService.delete(ratingID: rating.id) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .failure: break
+            case .success: self.refresh()
+            }
         }
+        disposables.insert(cancellable)
     }
 
     func refresh() {
@@ -117,22 +127,16 @@ extension RestaurantDetailsDefaultViewModel: RatingFormRatingViewModelDelegate {
 extension RestaurantDetailsDefaultViewModel {
     private func refreshRatings() {
         view?.showLoading(true)
-        let callable = Functions.functions().httpsCallable("restaurantRatings")
-        callable.call(["restaurantID": restaurant.id]) { [weak self] result, error in
+        let cancellable = ratingsService.getRatings(restaurantID: restaurant.id) { [weak self] result in
             guard let self = self else { return }
             defer {
                 self.view?.showLoading(false)
                 self.view?.reload()
             }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            guard
-                let data = result?.data,
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let ratings = try? decoder.decode([Rating].self, from: jsonData)
-            else { return self.ratings = [] }
+            guard let ratings = try? result.get() else { return self.ratings = [] }
             self.ratings = ratings
         }
+        disposables.insert(cancellable)
     }
 
     private func refreshRestaurant() {

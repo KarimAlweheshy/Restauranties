@@ -43,6 +43,8 @@
 		45760921256BFE6900A58CEE /* HTTPAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45760920256BFE6900A58CEE /* HTTPAuthenticator.swift */; };
 		45760926256BFEBB00A58CEE /* FirebaseReleaseHTTPEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45760925256BFEBB00A58CEE /* FirebaseReleaseHTTPEnvironment.swift */; };
 		45760935256BFFA000A58CEE /* FirebaseHTTPAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45760934256BFFA000A58CEE /* FirebaseHTTPAuthenticator.swift */; };
+		458D9FF125712C4500A94828 /* RatingsBackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458D9FF025712C4400A94828 /* RatingsBackendService.swift */; };
+		458D9FF925712C5E00A94828 /* RatingsBackendFirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458D9FF825712C5E00A94828 /* RatingsBackendFirebaseService.swift */; };
 		45BA7A94256C0BD0008D69BA /* RestaurantsBackendFirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BA7A93256C0BD0008D69BA /* RestaurantsBackendFirebaseService.swift */; };
 		45BA7A9C256C0FA6008D69BA /* HTTPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BA7A9B256C0FA6008D69BA /* HTTPError.swift */; };
 		45E42920256BF4DD00D99734 /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E4291F256BF4DD00D99734 /* BackendService.swift */; };
@@ -145,6 +147,8 @@
 		45760920256BFE6900A58CEE /* HTTPAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPAuthenticator.swift; sourceTree = "<group>"; };
 		45760925256BFEBB00A58CEE /* FirebaseReleaseHTTPEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseReleaseHTTPEnvironment.swift; sourceTree = "<group>"; };
 		45760934256BFFA000A58CEE /* FirebaseHTTPAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseHTTPAuthenticator.swift; sourceTree = "<group>"; };
+		458D9FF025712C4400A94828 /* RatingsBackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingsBackendService.swift; sourceTree = "<group>"; };
+		458D9FF825712C5E00A94828 /* RatingsBackendFirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingsBackendFirebaseService.swift; sourceTree = "<group>"; };
 		45BA7A93256C0BD0008D69BA /* RestaurantsBackendFirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantsBackendFirebaseService.swift; sourceTree = "<group>"; };
 		45BA7A9B256C0FA6008D69BA /* HTTPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPError.swift; sourceTree = "<group>"; };
 		45E4291F256BF4DD00D99734 /* BackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendService.swift; sourceTree = "<group>"; };
@@ -327,6 +331,15 @@
 			path = Authenticator;
 			sourceTree = "<group>";
 		};
+		458D9FEF25712C3100A94828 /* Ratings */ = {
+			isa = PBXGroup;
+			children = (
+				458D9FF025712C4400A94828 /* RatingsBackendService.swift */,
+				458D9FF825712C5E00A94828 /* RatingsBackendFirebaseService.swift */,
+			);
+			path = Ratings;
+			sourceTree = "<group>";
+		};
 		45BA7A92256C0BBF008D69BA /* Restaurants */ = {
 			isa = PBXGroup;
 			children = (
@@ -340,6 +353,7 @@
 			isa = PBXGroup;
 			children = (
 				45E4291F256BF4DD00D99734 /* BackendService.swift */,
+				458D9FEF25712C3100A94828 /* Ratings */,
 				454421DF256D0C18006BC841 /* Settings */,
 				45BA7A92256C0BBF008D69BA /* Restaurants */,
 				45760917256BFE3400A58CEE /* HTTP */,
@@ -845,11 +859,13 @@
 				452D90F5255AFD5A00F971C7 /* RestaurantDetailsViewController.swift in Sources */,
 				F6E6ED2925504514000C219D /* ImageWithInitialsGenerator.swift in Sources */,
 				F6E6ED8425505B5F000C219D /* Restaurant.swift in Sources */,
+				458D9FF925712C5E00A94828 /* RatingsBackendFirebaseService.swift in Sources */,
 				F661F4112551B7D50096E6D8 /* UsersListViewControllerFactory.swift in Sources */,
 				F661F4072551B68C0096E6D8 /* UsersListViewController.swift in Sources */,
 				F661F4472552F6CC0096E6D8 /* RestaurantFormViewModel.swift in Sources */,
 				F661F4372552F0EE0096E6D8 /* RestaurantFormViewController.swift in Sources */,
 				F6E6EDC72551483C000C219D /* RestaurantsListViewModel.swift in Sources */,
+				458D9FF125712C4500A94828 /* RatingsBackendService.swift in Sources */,
 				F661F4012551A1800096E6D8 /* ProfileViewControllerFactory.swift in Sources */,
 				452D90FF255B058E00F971C7 /* RestaurantDetailsViewModel.swift in Sources */,
 				45442209256D1483006BC841 /* ProfileDefaultViewModel.swift in Sources */,
