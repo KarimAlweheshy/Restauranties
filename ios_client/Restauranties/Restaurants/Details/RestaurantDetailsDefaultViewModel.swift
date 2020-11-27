@@ -7,14 +7,22 @@
 
 import Foundation
 import Firebase
+import Combine
 
 final class RestaurantDetailsDefaultViewModel {
     weak var view: RestaurantDetailsView?
     private let userRight: UserRight
+    private let restaurantsService: RestaurantsBackendService
     private var restaurant: Restaurant
     private var ratings = [Rating]()
+    private var disposables = Set<AnyCancellable>()
 
-    init(restaurant: Restaurant, userRight: UserRight) {
+    init(
+        restaurantsService: RestaurantsBackendService,
+        restaurant: Restaurant,
+        userRight: UserRight
+    ) {
+        self.restaurantsService = restaurantsService
         self.restaurant = restaurant
         self.userRight = userRight
     }
@@ -128,18 +136,12 @@ extension RestaurantDetailsDefaultViewModel {
     }
 
     private func refreshRestaurant() {
-        let callable = Functions.functions().httpsCallable("restaurantDetails")
-        callable.call(["restaurantID": restaurant.id]) { [weak self] result, error in
+        let cancellable = restaurantsService.restaurantDetails(restaurantID: restaurant.id) { [weak self] result in
             guard let self = self else { return }
             defer { self.view?.reload() }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .secondsSince1970
-            guard
-                let data = result?.data,
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let restaurant = try? decoder.decode(Restaurant.self, from: jsonData)
-            else { return }
+            guard let restaurant = try? result.get() else { return }
             self.restaurant = restaurant
         }
+        disposables.insert(cancellable)
     }
 }

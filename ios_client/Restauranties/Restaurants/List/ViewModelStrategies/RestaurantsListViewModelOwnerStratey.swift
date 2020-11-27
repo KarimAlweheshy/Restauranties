@@ -50,7 +50,12 @@ extension RestaurantsListViewModelOwnerStratey: RestaurantsListViewModelStratey 
     }
 
     func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel {
-        RestaurantDetailsDefaultViewModel(
+        let service = RestaurantsBackendFirebaseService(
+            env: FirebaseReleaseHTTPEnvironment(),
+            authenticator: FirebaseHTTPAuthenticator()
+        )
+        return RestaurantDetailsDefaultViewModel(
+            restaurantsService: service,
             restaurant: selectedRestaurant,
             userRight: .restaurantOwner
         )
