@@ -75,7 +75,11 @@ export class RestaurantsAPISModule implements module.Module {
     }
 
     private addRestaurant = async (req: core.Request, res: core.Response) => {
-        RestaurantUtilities.verifyRestaurantKeysAndValues(req.body)
+        if (!RestaurantUtilities.verifyRestaurantKeysAndValues(req.body)) {
+            res.status(400).send('Restaurant name is missing or invalid. At least three chars')
+            return
+        }
+        
 
         const db = admin.firestore()
         const restaurantsCollection = db.collection("restaurants")
@@ -96,9 +100,15 @@ export class RestaurantsAPISModule implements module.Module {
             0,
             0
         )
-        const docReference = await restaurantsCollection.add(restaurant)
-        const documentSnapshot = await docReference.get()
-        res.status(201).json(this.dtoFromRestaurantDocument(documentSnapshot))
+        try {
+            const firebaseEntry = JSON.parse(JSON.stringify(restaurant))
+            firebaseEntry.creationDate = admin.firestore.Timestamp.now()
+            const docReference = await restaurantsCollection.add(firebaseEntry)
+            const documentSnapshot = await docReference.get()
+            res.status(201).json(this.dtoFromRestaurantDocument(documentSnapshot))
+        } catch (error) {
+            res.status(400).json('Something went wrong')
+        }
     }
 
     private applyRatingFilterOnDocReferenceIfPossible = (

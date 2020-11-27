@@ -118,7 +118,7 @@ export class RatingsAPISModule implements module.Module {
                 const newTotalNoReply = restaurant.noReplyCount + 1
         
                 transaction.update(restaurantDocSnapshot.ref, { totalRatings: newTotalRatings, averageRating: newAverageRating, noReplyCount: newTotalNoReply })
-                transaction.create(newRatingDocRef, rating)
+                transaction.create(newRatingDocRef, JSON.parse(JSON.stringify(rating)))
             })
             res.sendStatus(201)
         } catch (error) {
