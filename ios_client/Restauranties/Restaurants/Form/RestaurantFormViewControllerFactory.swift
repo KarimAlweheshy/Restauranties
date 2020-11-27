@@ -10,7 +10,11 @@ import UIKit
 struct RestaurantFormViewControllerFactory {
     func makeNewRestaurant() -> RestaurantFormViewController {
         let storyboard = UIStoryboard(name: "RestaurantForm", bundle: nil)
-        let viewModel = NewRestaurantFormViewModel()
+        let service = RestaurantsBackendFirebaseService(
+            env: FirebaseReleaseHTTPEnvironment(),
+            authenticator: FirebaseHTTPAuthenticator()
+        )
+        let viewModel = NewRestaurantFormViewModel(service: service)
         let viewController = storyboard.instantiateInitialViewController { coder -> RestaurantFormViewController? in
             RestaurantFormViewController(coder: coder, viewModel: viewModel)
         }
