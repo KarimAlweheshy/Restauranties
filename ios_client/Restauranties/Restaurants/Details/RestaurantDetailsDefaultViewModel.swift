@@ -77,25 +77,31 @@ extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
 
     func didAddReplyForRating(reply: String, at indexPath: IndexPath) {
         let rating = ratings[indexPath.row]
-        let cancellable = ratingsService.reply(ratingID: rating.id, reply: reply) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .failure: break
-            case .success: self.refresh()
-            }
-        }
+        let cancellable = ratingsService
+            .reply(ratingID: rating.id, reply: reply)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished: self?.refresh()
+                    case .failure: break
+                    }
+                }, receiveValue: { _ in }
+            )
         disposables.insert(cancellable)
     }
 
     func didTapDeleteRating(at indexPath: IndexPath) {
         let rating = ratings[indexPath.row]
-        let cancellable = ratingsService.delete(ratingID: rating.id) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .failure: break
-            case .success: self.refresh()
-            }
-        }
+        let cancellable = ratingsService
+            .delete(ratingID: rating.id)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished: self?.refresh()
+                    case .failure: break
+                    }
+                }, receiveValue: { _ in }
+            )
         disposables.insert(cancellable)
     }
 
@@ -130,15 +136,20 @@ extension RestaurantDetailsDefaultViewModel: RatingFormRatingViewModelDelegate {
 extension RestaurantDetailsDefaultViewModel {
     private func refreshRatings() {
         view?.showLoading(true)
-        let cancellable = ratingsService.getRatings(restaurantID: restaurant.id) { [weak self] result in
-            guard let self = self else { return }
-            defer {
-                self.view?.showLoading(false)
-                self.view?.reload()
-            }
-            guard let ratings = try? result.get() else { return self.ratings = [] }
-            self.ratings = ratings
-        }
+        let cancellable = ratingsService
+            .getRatings(restaurantID: restaurant.id)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .failure: self?.ratings = []
+                    case .finished: break
+                    }
+                    self?.view?.showLoading(false)
+                    self?.view?.reload()
+                }, receiveValue: { [weak self] ratings in
+                    self?.ratings = ratings
+                }
+            )
         disposables.insert(cancellable)
     }
 

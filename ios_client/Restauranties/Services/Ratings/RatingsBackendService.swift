@@ -9,27 +9,14 @@ import Foundation
 import Combine
 
 protocol RatingsBackendService: BackendService {
-    func getRatings(
-        restaurantID: String,
-        completionHandler: @escaping (Result<[Rating], Error>) -> Void
-    ) -> AnyCancellable
-
-    func reply(
-        ratingID: String,
-        reply: String,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
-
-    func delete(
-        ratingID: String,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
+    func getRatings(restaurantID: String) -> AnyPublisher<[Rating], Error>
+    func reply(ratingID: String, reply: String) -> AnyPublisher<Void, Error>
+    func delete(ratingID: String) -> AnyPublisher<Void, Error>
 
     func create(
         restaurantID: String,
         visitDate: Date,
         comment: String,
-        stars: Int,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
+        stars: Int
+    ) -> AnyPublisher<Void, Error>
 }

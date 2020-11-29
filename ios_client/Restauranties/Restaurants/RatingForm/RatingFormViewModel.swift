@@ -56,15 +56,21 @@ extension RatingFormRatingViewModel: RatingFormViewModel {
             comment.count > 0
         else { return }
         view?.showLoading(true)
-        let cancellable = service.create(
-            restaurantID: restaurant.id,
-            visitDate: visitDate,
-            comment: comment,
-            stars: stars) { [weak delegate, weak view] result in
-            view?.showLoading(false)
-            guard (try? result.get()) != nil else { return }
-            delegate?.didFinish()
-        }
+        let cancellable = service
+            .create(
+                restaurantID: restaurant.id,
+                visitDate: visitDate,
+                comment: comment,
+                stars: stars
+            ).sink(
+                receiveCompletion: { [weak delegate, weak view] completion in
+                    switch completion {
+                    case .finished: delegate?.didFinish()
+                    case .failure: break
+                    }
+                    view?.showLoading(false)
+                },receiveValue: { _ in }
+            )
         disposables.insert(cancellable)
     }
 
