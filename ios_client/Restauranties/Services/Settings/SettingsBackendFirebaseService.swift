@@ -33,35 +33,34 @@ extension SettingsBackendFirebaseService: SettingsBackendService {
         return mapper.map(user: user, claims: [:])
     }
     
-    func getCurrentUserRight(completionHandler: @escaping (Result<UserRight, Error>) -> Void) {
+    func getCurrentUserRight() -> AnyPublisher<UserRight, Error> {
         guard let user = Auth.auth().currentUser else { fatalError() }
-        user.getIDTokenResult(forcingRefresh: true) { result, error in
-            guard let result = result else { return }
-            switch UserRight(claims: result.claims) {
-            case .admin: completionHandler(.success(.admin))
-            case .restaurantOwner: completionHandler(.success(.restaurantOwner))
-            case .rater: completionHandler(.success(.rater))
-            case .unknown: fatalError()
+        return Future { promise in
+            user.getIDTokenResult(forcingRefresh: true) { result, error in
+                if let error = error {
+                    return promise(.failure(error))
+                }
+                guard let result = result else { fatalError() }
+                switch UserRight(claims: result.claims) {
+                case .admin: promise(.success(.admin))
+                case .restaurantOwner: promise(.success(.restaurantOwner))
+                case .rater: promise(.success(.rater))
+                case .unknown: fatalError()
+                }
             }
-        }
+        }.eraseToAnyPublisher()
     }
     
-    func changeUserRightToOwner(
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable {
-        changeRight(path: "/becomeOwner", completionHandler: completionHandler)
+    func changeUserRightToOwner() -> AnyPublisher<Void, Error> {
+        changeRight(path: "/becomeOwner")
     }
     
-    func changeUserRightToAdmin(
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable {
-        changeRight(path: "/becomeAdmin", completionHandler: completionHandler)
+    func changeUserRightToAdmin() -> AnyPublisher<Void, Error> {
+        changeRight(path: "/becomeAdmin")
     }
     
-    func changeUserRightToRater(
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable {
-        changeRight(path: "/becomeRater", completionHandler: completionHandler)
+    func changeUserRightToRater() -> AnyPublisher<Void, Error> {
+        changeRight(path: "/becomeRater")
     }
     
     func signOut() throws {
@@ -72,10 +71,7 @@ extension SettingsBackendFirebaseService: SettingsBackendService {
 // MARK: - Private Methods
 
 extension SettingsBackendFirebaseService {
-    private func changeRight(
-        path: String,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable {
+    private func changeRight(path: String) -> AnyPublisher<Void, Error> {
         let urlRequest = url(
             httpMethod: .post,
             path: servicePathPrefix + path
@@ -84,16 +80,8 @@ extension SettingsBackendFirebaseService {
         return URLSession
             .shared
             .dataTaskPublisher(for: urlRequest)
-            .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .tryMap { try HTTPResponseParser().voidOrError(data: $0.data, response: $0.response) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink { completion in
-                switch completion {
-                case .failure(let error): completionHandler(.failure(error))
-                case .finished: break
-                }
-            } receiveValue: { output in
-                completionHandler(.success(()))
-            }
     }
 }

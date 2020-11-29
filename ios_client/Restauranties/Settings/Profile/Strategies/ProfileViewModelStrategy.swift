@@ -12,5 +12,5 @@ protocol ProfileViewModelStrategy {
     var userType: String { get }
     var isChangeUserRightContainerHidden: Bool { get }
     var changeUserRightButtonText: String { get }
-    var changeRightsCallableHTTPS: (SettingsBackendService) -> (@escaping (Result<Void, Error>) -> Void) -> AnyCancellable { get }
+    var changeRightsCallableHTTPS: (SettingsBackendService) -> AnyPublisher<Void, Error> { get }
 }

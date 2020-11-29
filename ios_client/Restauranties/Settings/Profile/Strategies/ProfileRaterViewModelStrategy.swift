@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import Combine
 
 struct ProfileRaterViewModelStrategy: ProfileViewModelStrategy {
-    let changeRightsCallableHTTPS = SettingsBackendService.changeUserRightToOwner
+    let changeRightsCallableHTTPS: (SettingsBackendService) -> AnyPublisher<Void, Error> = {
+        $0.changeUserRightToOwner()
+    }
     let changeUserRightButtonText = "Become Restaurant Owner"
     let isChangeUserRightContainerHidden = false
     let userType = "Rater"

@@ -9,7 +9,9 @@ import Foundation
 import Combine
 
 struct ProfileUnknownViewModelStrategy: ProfileViewModelStrategy {
-    var changeRightsCallableHTTPS: (SettingsBackendService) -> (@escaping (Result<Void, Error>) -> Void) -> AnyCancellable = { _ in { _ in AnyCancellable({}) } }
+    let changeRightsCallableHTTPS: (SettingsBackendService) -> AnyPublisher<Void, Error> = { _ in
+        Future<Void, Error> { _ in }.eraseToAnyPublisher()
+    }
     let changeUserRightButtonText = ""
     let isChangeUserRightContainerHidden = true
     let userType = "Unknown - Error"

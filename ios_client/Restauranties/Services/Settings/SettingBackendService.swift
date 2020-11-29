@@ -11,19 +11,10 @@ import Combine
 protocol SettingsBackendService: BackendService {
     func getMyUser() -> UserAccount
 
-    func getCurrentUserRight(completionHandler: @escaping (Result<UserRight, Error>) -> Void)
-
-    func changeUserRightToOwner(
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
-
-    func changeUserRightToAdmin(
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
-
-    func changeUserRightToRater(
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
+    func getCurrentUserRight() -> AnyPublisher<UserRight, Error>
+    func changeUserRightToOwner() -> AnyPublisher<Void, Error>
+    func changeUserRightToAdmin() -> AnyPublisher<Void, Error>
+    func changeUserRightToRater() -> AnyPublisher<Void, Error>
 
     func signOut() throws
 }

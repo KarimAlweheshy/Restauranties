@@ -39,21 +39,26 @@ extension ProfileDefaultViewModel: ProfileViewModel {
     var changeUserRightButtonText: String { strategy.changeUserRightButtonText }
 
     func refreshedViewModel() {
-        settingsBackendService.getCurrentUserRight { [weak delegate] result in
-            guard let userRight = try? result.get() else { return }
-            switch userRight {
-            case .admin: delegate?.didChangeUserPermission(.admin)
-            case .restaurantOwner: delegate?.didChangeUserPermission(.restaurantOwner)
-            case .rater: delegate?.didChangeUserPermission(.rater)
-            case .unknown: fatalError()
-            }
-        }
+        settingsBackendService
+            .getCurrentUserRight()
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak delegate] userRight in
+                    switch userRight {
+                    case .admin: delegate?.didChangeUserPermission(.admin)
+                    case .restaurantOwner: delegate?.didChangeUserPermission(.restaurantOwner)
+                    case .rater: delegate?.didChangeUserPermission(.rater)
+                    case .unknown: fatalError()
+                    }
+                }
+            ).store(in: &disposables)
     }
 
     func didTapChangeRightAction(completionHandler: @escaping () -> Void) {
-        strategy.changeRightsCallableHTTPS(settingsBackendService)({ result in
-            completionHandler()
-        }).store(in: &disposables)
+        strategy
+            .changeRightsCallableHTTPS(settingsBackendService)
+            .sink(receiveCompletion: { _ in completionHandler() }, receiveValue: { _ in })
+            .store(in: &disposables)
     }
 
     func didTapSignOut() {
