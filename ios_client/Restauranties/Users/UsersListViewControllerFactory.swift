@@ -10,7 +10,10 @@ import UIKit
 struct UsersListViewControllerFactory {
     func make() -> UsersListViewController {
         let storyboard = UIStoryboard(name: "UsersList", bundle: nil)
-        let service = 
+        let service = UsersBackendFirebaseService(
+            env: FirebaseReleaseHTTPEnvironment(),
+            authenticator: FirebaseHTTPAuthenticator()
+        )
         let viewController = storyboard.instantiateInitialViewController { coder -> UsersListViewController? in
             UsersListViewController(coder: coder, service: service)
         }

@@ -19,7 +19,7 @@ final class UsersBackendFirebaseService {
         return decoder
     }()
 
-    private let servicePathPrefix = "/ratings"
+    private let servicePathPrefix = "/users"
 
     init(
         env: HTTPEnvironment,
@@ -39,8 +39,7 @@ extension UsersBackendFirebaseService: UsersBackendService {
     ) -> AnyCancellable {
         let urlRequest = url(
             httpMethod: .delete,
-            path: servicePathPrefix,
-            queryItems: [URLQueryItem(name: "uid", value: user.uid)]
+            path: servicePathPrefix + "/" + user.uid
         )
         return URLSession.shared
             .dataTaskPublisher(for: urlRequest)
@@ -60,6 +59,23 @@ extension UsersBackendFirebaseService: UsersBackendService {
     func getUsers(
         completionHandler: @escaping (Result<[UserAccount], Error>) -> Void
     ) -> AnyCancellable {
-
+        let urlRequest = url(
+            httpMethod: .get,
+            path: servicePathPrefix
+        )
+        return URLSession.shared
+            .dataTaskPublisher(for: urlRequest)
+            .tryCompactMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .decode(type: [UserAccount].self, decoder: decoder)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error): completionHandler(.failure(error))
+                }
+            }, receiveValue: { users in
+                completionHandler(.success(users))
+            })
     }
 }
