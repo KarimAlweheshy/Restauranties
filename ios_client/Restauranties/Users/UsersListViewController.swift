@@ -104,10 +104,15 @@ extension UsersListViewController {
     }
 
     private func delete(_ user: UserAccount) {
-        let cancellable = service.delete(user: user) { [weak self] result in
-            guard let self = self else { return }
-            self.refresh()
-        }
+        let cancellable = service
+            .delete(user: user)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.refresh()
+                }
+            )
         disposable.insert(cancellable)
     }
 
@@ -133,12 +138,22 @@ extension UsersListViewController {
 
     private func refresh() {
         tableView.refreshControl?.beginRefreshing()
-        let cancellable = service.getUsers { [weak self] result in
-            guard let self = self else { return }
-            self.tableView.refreshControl?.endRefreshing()
-            self.users = (try? result.get()) ?? []
-            self.tableView.reloadData()
-        }
+        let cancellable = service
+            .getUsers()
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    guard let self = self else { return }
+                    switch completion {
+                    case .failure: self.users = []
+                    case .finished: break
+                    }
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.tableView.reloadData()
+                },
+                receiveValue: { [weak self] result in
+                    self?.users = result
+                }
+            )
         disposable.insert(cancellable)
     }
 

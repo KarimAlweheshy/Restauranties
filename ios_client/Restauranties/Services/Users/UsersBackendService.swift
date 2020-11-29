@@ -9,12 +9,6 @@ import Foundation
 import Combine
 
 protocol UsersBackendService: BackendService {
-    func getUsers(
-        completionHandler: @escaping (Result<[UserAccount], Error>) -> Void
-    ) -> AnyCancellable
-
-    func delete(
-        user: UserAccount,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
+    func getUsers() -> AnyPublisher<[UserAccount], Error>
+    func delete(user: UserAccount) -> AnyPublisher<Void, Error>
 }

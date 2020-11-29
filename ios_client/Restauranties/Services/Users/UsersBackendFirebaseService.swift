@@ -33,32 +33,20 @@ final class UsersBackendFirebaseService {
 // MARK: - UsersBackendService
 
 extension UsersBackendFirebaseService: UsersBackendService {
-    func delete(
-        user: UserAccount,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable {
+    func delete(user: UserAccount) -> AnyPublisher<Void, Error> {
         let urlRequest = url(
             httpMethod: .delete,
             path: servicePathPrefix + "/" + user.uid
         )
         return URLSession.shared
             .dataTaskPublisher(for: urlRequest)
-            .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .tryMap { try HTTPResponseParser().voidOrError(data: $0.data, response: $0.response) }
+            .mapError { $0 as Error }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error): completionHandler(.failure(error))
-                }
-            }, receiveValue: { _ in
-                completionHandler(.success(()))
-            })
     }
 
-    func getUsers(
-        completionHandler: @escaping (Result<[UserAccount], Error>) -> Void
-    ) -> AnyCancellable {
+    func getUsers() -> AnyPublisher<[UserAccount], Error> {
         let urlRequest = url(
             httpMethod: .get,
             path: servicePathPrefix
@@ -69,13 +57,5 @@ extension UsersBackendFirebaseService: UsersBackendService {
             .decode(type: [UserAccount].self, decoder: decoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error): completionHandler(.failure(error))
-                }
-            }, receiveValue: { users in
-                completionHandler(.success(users))
-            })
     }
 }

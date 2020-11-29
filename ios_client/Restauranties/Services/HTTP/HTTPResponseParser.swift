@@ -20,4 +20,17 @@ struct HTTPResponseParser {
         }
         return data
     }
+
+    func voidOrError(data: Data?, response: URLResponse) throws {
+        guard
+            let response = response as? HTTPURLResponse,
+            !(200..<300).contains(response.statusCode)
+        else {
+            fatalError("Support only http")
+        }
+        throw HTTPError(
+            statusCode: response.statusCode,
+            data: data
+        )
+    }
 }
