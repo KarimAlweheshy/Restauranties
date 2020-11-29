@@ -13,7 +13,7 @@ final class UsersListViewController: UIViewController {
 
     private let service: UsersBackendService
     private var users = [UserAccount]()
-    private var disposable = Set<AnyCancellable>()
+    private var disposables = Set<AnyCancellable>()
 
     init?(coder: NSCoder, service: UsersBackendService) {
         self.service = service
@@ -104,7 +104,7 @@ extension UsersListViewController {
     }
 
     private func delete(_ user: UserAccount) {
-        let cancellable = service
+        service
             .delete(user: user)
             .sink(
                 receiveCompletion: { _ in },
@@ -112,8 +112,7 @@ extension UsersListViewController {
                     guard let self = self else { return }
                     self.refresh()
                 }
-            )
-        disposable.insert(cancellable)
+            ).store(in: &disposables)
     }
 
     private func showCannotDeleteAdmin() {
@@ -138,7 +137,7 @@ extension UsersListViewController {
 
     private func refresh() {
         tableView.refreshControl?.beginRefreshing()
-        let cancellable = service
+        service
             .getUsers()
             .sink(
                 receiveCompletion: { [weak self] completion in
@@ -153,8 +152,7 @@ extension UsersListViewController {
                 receiveValue: { [weak self] result in
                     self?.users = result
                 }
-            )
-        disposable.insert(cancellable)
+            ).store(in: &disposables)
     }
 
     private func setup(

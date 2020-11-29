@@ -10,7 +10,6 @@ import Combine
 
 final class RestaurantsListViewModelAdminStratey {
     private let service: RestaurantsBackendService
-    private var cancellable: AnyCancellable?
 
     init(service: RestaurantsBackendService) {
         self.service = service
@@ -24,12 +23,8 @@ extension RestaurantsListViewModelAdminStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func refreshRestaurants(completionHandler: @escaping (Result<[Restaurant], Error>) -> Void) {
-        cancellable?.cancel()
-        cancellable = service.getAllRestaurants(
-            filter: nil,
-            completionHandler: completionHandler
-        )
+    func refreshRestaurants() -> AnyPublisher<[Restaurant], Error> {
+        service.getAllRestaurants(filter: nil)
     }
 
     func shouldShowAddRestaurant() -> Bool {

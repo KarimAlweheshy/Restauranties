@@ -11,7 +11,6 @@ import Combine
 final class RestaurantsListViewModelRaterStratey {
     private let service: RestaurantsBackendService
     private var selectedFilter: String? = nil
-    private var cancellable: AnyCancellable?
 
     init(service: RestaurantsBackendService) {
         self.service = service
@@ -25,14 +24,8 @@ extension RestaurantsListViewModelRaterStratey: RestaurantsListViewModelStratey 
         RestaurantCellDefaultViewModel(restaurant: restaurant)
     }
 
-    func refreshRestaurants(
-        completionHandler: @escaping (Result<[Restaurant], Error>) -> Void
-    ) {
-        cancellable?.cancel()
-        cancellable = service.getAllRestaurants(
-            filter: filter(),
-            completionHandler: completionHandler
-        )
+    func refreshRestaurants() -> AnyPublisher<[Restaurant], Error> {
+        service.getAllRestaurants(filter: nil)
     }
 
     func shouldShowAddRestaurant() -> Bool {

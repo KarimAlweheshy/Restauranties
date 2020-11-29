@@ -22,14 +22,12 @@ final class NewRestaurantFormViewModel: RestaurantFormViewModel {
     func didTapDone() {
         guard name.count > 2 else { return }
         view?.enableDoneButton(false)
-        let cancellable = service.createNewRestaurant(name: name) { [weak self] result in
-            self?.view?.enableDoneButton(true)
-            switch result {
-            case .failure: break
-            case .success: self?.view?.didFinish()
-            }
-        }
-        disposables.insert(cancellable)
+        service
+            .createNewRestaurant(name: name)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak view ]_ in view?.didFinish() }
+            ).store(in: &disposables)
     }
 
     func didUpdate(name: String) {

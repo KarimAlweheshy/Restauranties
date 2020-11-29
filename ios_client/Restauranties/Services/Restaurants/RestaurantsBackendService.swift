@@ -9,32 +9,9 @@ import Foundation
 import Combine
 
 protocol RestaurantsBackendService: BackendService {
-    typealias RestaurantsCallback = (Result<[Restaurant], Error>) -> Void
-
-    typealias RestaurantCallback = (Result<Restaurant, Error>) -> Void
-
-    func getAllRestaurants(
-        filter: AllRestaurantsFilter?,
-        completionHandler: @escaping RestaurantsCallback
-    ) -> AnyCancellable
-
-    func getMyRestaurants(
-        filter: MyRestaurantsFilter?,
-        completionHandler: @escaping RestaurantsCallback
-    ) -> AnyCancellable
-
-    func createNewRestaurant(
-        name: String,
-        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
-    ) -> AnyCancellable
-
-    func restaurantDetails(
-        restaurantID: String,
-        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
-    ) -> AnyCancellable
-
-    func deleteRestaurant(
-        restaurantID: String,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable
+    func getAllRestaurants(filter: AllRestaurantsFilter?) -> AnyPublisher<[Restaurant], Error>
+    func getMyRestaurants(filter: MyRestaurantsFilter?) -> AnyPublisher<[Restaurant], Error>
+    func createNewRestaurant(name: String) -> AnyPublisher<Restaurant, Error>
+    func restaurantDetails(restaurantID: String) -> AnyPublisher<Restaurant, Error>
+    func deleteRestaurant(restaurantID: String) -> AnyPublisher<Void, Error>
 }

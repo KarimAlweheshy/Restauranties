@@ -77,7 +77,7 @@ extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
 
     func didAddReplyForRating(reply: String, at indexPath: IndexPath) {
         let rating = ratings[indexPath.row]
-        let cancellable = ratingsService
+        ratingsService
             .reply(ratingID: rating.id, reply: reply)
             .sink(
                 receiveCompletion: { [weak self] completion in
@@ -86,13 +86,12 @@ extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
                     case .failure: break
                     }
                 }, receiveValue: { _ in }
-            )
-        disposables.insert(cancellable)
+            ).store(in: &disposables)
     }
 
     func didTapDeleteRating(at indexPath: IndexPath) {
         let rating = ratings[indexPath.row]
-        let cancellable = ratingsService
+        ratingsService
             .delete(ratingID: rating.id)
             .sink(
                 receiveCompletion: { [weak self] completion in
@@ -101,8 +100,7 @@ extension RestaurantDetailsDefaultViewModel: RestaurantDetailsViewModel {
                     case .failure: break
                     }
                 }, receiveValue: { _ in }
-            )
-        disposables.insert(cancellable)
+            ).store(in: &disposables)
     }
 
     func refresh() {
@@ -136,7 +134,7 @@ extension RestaurantDetailsDefaultViewModel: RatingFormRatingViewModelDelegate {
 extension RestaurantDetailsDefaultViewModel {
     private func refreshRatings() {
         view?.showLoading(true)
-        let cancellable = ratingsService
+        ratingsService
             .getRatings(restaurantID: restaurant.id)
             .sink(
                 receiveCompletion: { [weak self] completion in
@@ -149,17 +147,19 @@ extension RestaurantDetailsDefaultViewModel {
                 }, receiveValue: { [weak self] ratings in
                     self?.ratings = ratings
                 }
-            )
-        disposables.insert(cancellable)
+            ).store(in: &disposables)
     }
 
     private func refreshRestaurant() {
-        let cancellable = restaurantsService.restaurantDetails(restaurantID: restaurant.id) { [weak self] result in
-            guard let self = self else { return }
-            defer { self.view?.reload() }
-            guard let restaurant = try? result.get() else { return }
-            self.restaurant = restaurant
-        }
-        disposables.insert(cancellable)
+        restaurantsService
+            .restaurantDetails(restaurantID: restaurant.id)
+            .sink(
+                receiveCompletion: { [weak self] _ in
+                    self?.view?.reload()
+                },
+                receiveValue: { [weak self] restaurant in
+                    self?.restaurant = restaurant
+                }
+            ).store(in: &disposables)
     }
 }

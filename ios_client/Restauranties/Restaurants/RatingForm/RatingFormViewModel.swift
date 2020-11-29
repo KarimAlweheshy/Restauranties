@@ -56,7 +56,7 @@ extension RatingFormRatingViewModel: RatingFormViewModel {
             comment.count > 0
         else { return }
         view?.showLoading(true)
-        let cancellable = service
+        service
             .create(
                 restaurantID: restaurant.id,
                 visitDate: visitDate,
@@ -70,8 +70,7 @@ extension RatingFormRatingViewModel: RatingFormViewModel {
                     }
                     view?.showLoading(false)
                 },receiveValue: { _ in }
-            )
-        disposables.insert(cancellable)
+            ).store(in: &disposables)
     }
 
     func didChange(stars: Int) {

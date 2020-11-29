@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import Combine
 
 protocol RestaurantsListViewModelStratey: RestaurantsFilterDataSource, RestaurantsFilterDelegate {
     func shouldShowFilterRestaurant() -> Bool
@@ -16,7 +17,7 @@ protocol RestaurantsListViewModelStratey: RestaurantsFilterDataSource, Restauran
     func tabBarSystemImageName() -> String
     func viewModel(for selectedRestaurant: Restaurant) -> RestaurantDetailsViewModel
 
-    func refreshRestaurants(completionHandler: @escaping (Result<[Restaurant], Error>) -> Void)
+    func refreshRestaurants() -> AnyPublisher<[Restaurant], Error>
 }
 
 final class RestaurantsListDefaultViewModel {
@@ -25,6 +26,7 @@ final class RestaurantsListDefaultViewModel {
     private let strategy: RestaurantsListViewModelStratey
     private var restaurants = [Restaurant]() { didSet { view?.reload() } }
     private var selectedFilter: String? = nil
+    private var cancellable: AnyCancellable?
 
     init(strategy: RestaurantsListViewModelStratey) {
         self.strategy = strategy
@@ -36,12 +38,21 @@ final class RestaurantsListDefaultViewModel {
 extension RestaurantsListDefaultViewModel: RestaurantsListViewModel {
     func refresh() {
         view?.showLoading(true)
-        strategy.refreshRestaurants { [weak self] result in
-            guard let self = self else { return }
-            self.restaurants = (try? result.get()) ?? []
-            self.view?.showLoading(false)
-            self.view?.reload()
-        }
+        cancellable?.cancel()
+        cancellable = strategy
+            .refreshRestaurants()
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .failure: self?.restaurants = []
+                    case .finished: break
+                    }
+                    self?.view?.showLoading(false)
+                    self?.view?.reload()
+                }, receiveValue: { [weak self] restaurants in
+                    self?.restaurants = restaurants
+                }
+            )
     }
 
     func shouldShowFilterRestaurant() -> Bool {

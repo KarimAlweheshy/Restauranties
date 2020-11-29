@@ -31,10 +31,7 @@ final class RestaurantsBackendFirebaseService {
 // MARK: - RestaurantsBackendService
 
 extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
-    func getAllRestaurants(
-        filter: AllRestaurantsFilter?,
-        completionHandler: @escaping RestaurantsCallback
-    ) -> AnyCancellable {
+    func getAllRestaurants(filter: AllRestaurantsFilter?) -> AnyPublisher<[Restaurant], Error> {
         let queryItems = filter
             .map { URLQueryItem(name: "filter", value: "\($0.starsNumber)") }
             .map { [$0] }
@@ -45,13 +42,10 @@ extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
             queryItems: queryItems
         )
 
-        return getRestaurants(from: urlRequest, completionHandler: completionHandler)
+        return getRestaurants(from: urlRequest)
     }
 
-    func getMyRestaurants(
-        filter: MyRestaurantsFilter?,
-        completionHandler: @escaping RestaurantsCallback
-    ) -> AnyCancellable {
+    func getMyRestaurants(filter: MyRestaurantsFilter?) -> AnyPublisher<[Restaurant], Error> {
         let queryItems = filter
             .map { filter -> URLQueryItem in
                 let value = filter == .hasPendingReplies ? "true" : "false"
@@ -64,13 +58,10 @@ extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
             queryItems: queryItems
         )
 
-        return getRestaurants(from: urlRequest, completionHandler: completionHandler)
+        return getRestaurants(from: urlRequest)
     }
 
-    func createNewRestaurant(
-        name: String,
-        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
-    ) -> AnyCancellable {
+    func createNewRestaurant(name: String) -> AnyPublisher<Restaurant, Error> {
         let postBody = ["name": name]
 
         let urlRequest = url(
@@ -85,20 +76,9 @@ extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
             .decode(type: Restaurant.self, decoder: decoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error): completionHandler(.failure(error))
-                }
-            }, receiveValue: { restaurant in
-                completionHandler(.success(restaurant))
-            })
     }
 
-    func restaurantDetails(
-        restaurantID: String,
-        completionHandler: @escaping (Result<Restaurant, Error>) -> Void
-    ) -> AnyCancellable {
+    func restaurantDetails(restaurantID: String) -> AnyPublisher<Restaurant, Error> {
         let urlRequest = url(
             httpMethod: .get,
             path: servicePathPrefix + "/" + restaurantID
@@ -110,20 +90,9 @@ extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
             .decode(type: Restaurant.self, decoder: decoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error): completionHandler(.failure(error))
-                }
-            }, receiveValue: { restaurant in
-                completionHandler(.success(restaurant))
-            })
     }
 
-    func deleteRestaurant(
-        restaurantID: String,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
-    ) -> AnyCancellable {
+    func deleteRestaurant(restaurantID: String) -> AnyPublisher<Void, Error> {
         let urlRequest = url(
             httpMethod: .delete,
             path: servicePathPrefix + "/" + restaurantID
@@ -131,39 +100,20 @@ extension RestaurantsBackendFirebaseService: RestaurantsBackendService {
 
         return URLSession.shared
             .dataTaskPublisher(for: urlRequest)
-            .tryMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
+            .tryMap { try HTTPResponseParser().voidOrError(data: $0.data, response: $0.response) }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error): completionHandler(.failure(error))
-                }
-            }, receiveValue: { _ in
-                completionHandler(.success(()))
-            })
     }
 }
 
 // MARK: - Private Methods
 extension RestaurantsBackendFirebaseService {
-    private func getRestaurants(
-        from urlRequest: URLRequest,
-        completionHandler: @escaping (Result<[Restaurant], Error>) -> Void
-    ) -> AnyCancellable {
+    private func getRestaurants(from urlRequest: URLRequest) -> AnyPublisher<[Restaurant], Error> {
         URLSession.shared
             .dataTaskPublisher(for: urlRequest)
             .tryCompactMap { try HTTPResponseParser().dataOrError(data: $0.data, response: $0.response) }
             .decode(type: [Restaurant].self, decoder: decoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished: break
-                case .failure(let error): completionHandler(.failure(error))
-                }
-            }, receiveValue: { restaurants in
-                completionHandler(.success(restaurants))
-            })
     }
 }
