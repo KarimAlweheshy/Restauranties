@@ -6,12 +6,23 @@
 //
 
 import UIKit
-import FirebaseFunctions
+import Combine
 
 final class UsersListViewController: UIViewController {
     @IBOutlet private var tableView: UITableView!
 
+    private let service: UsersBackendService
     private var users = [UserAccount]()
+    private var disposable = Set<AnyCancellable>()
+
+    init?(coder: NSCoder, service: UsersBackendService) {
+        self.service = service
+        super.init(coder: coder)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -93,11 +104,11 @@ extension UsersListViewController {
     }
 
     private func delete(_ user: UserAccount) {
-        let callable = Functions.functions().httpsCallable("deleteUser")
-        callable.call(["uid": user.uid]) { [weak self] result, error in
+        let cancellable = service.delete(user: user) { [weak self] result in
             guard let self = self else { return }
             self.refresh()
         }
+        disposable.insert(cancellable)
     }
 
     private func showCannotDeleteAdmin() {
@@ -122,17 +133,13 @@ extension UsersListViewController {
 
     private func refresh() {
         tableView.refreshControl?.beginRefreshing()
-        Functions.functions().httpsCallable("getAllUsers").call() { [weak self] result, error in
+        let cancellable = service.getUsers { [weak self] result in
             guard let self = self else { return }
             self.tableView.refreshControl?.endRefreshing()
-            guard
-                let data = result?.data,
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .fragmentsAllowed),
-                let users = try? JSONDecoder().decode([UserAccount].self, from: jsonData)
-            else { return self.users = [] }
-            self.users = users
+            self.users = (try? result.get()) ?? []
             self.tableView.reloadData()
         }
+        disposable.insert(cancellable)
     }
 
     private func setup(
