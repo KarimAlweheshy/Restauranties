@@ -73,9 +73,10 @@ export class RestaurantsAPISModule implements module.Module {
             res.status(400).send('Restaurant with id ' + restaurantID + ' not found') 
         } else {
             const response = this.dtoFromRestaurantDocument(doc)
-            if (UserUtilities.verifyIsRaterUser(res.locals.claims)) {
+            try {
+                UserUtilities.verifyIsRaterUser(res.locals.claims)
                 delete response.noReplyCount
-            }
+            } catch {}
             res.status(200).json(response)
         }
     }
